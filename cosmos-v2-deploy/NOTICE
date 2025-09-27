@@ -1,0 +1,23 @@
+COSMOS-HGP
+Copyright 2025 장재혁 (Jaehyuk Jang)
+
+This product includes software developed by the COSMOS-HGP project.
+
+Contact Information:
+- GitHub: https://github.com/IdeasCosmos/COSMOS_HGP
+- Issues: https://github.com/IdeasCosmos/COSMOS_HGP/issues
+- Discussions: https://github.com/IdeasCosmos/COSMOS_HGP/discussions
+
+Third-party components and their licenses:
+- NumPy: BSD License (https://numpy.org/license.html)
+- Flask: BSD License (https://github.com/pallets/flask/blob/main/LICENSE.rst)
+- Pandas: BSD License (https://github.com/pandas-dev/pandas/blob/main/LICENSE)
+- SciKit-Learn: BSD License (https://github.com/scikit-learn/scikit-learn/blob/main/COPYING)
+
+For commercial licensing and support, please contact:
+- Email: sjpupro@gmail.com
+- Website: https://cosmos-hgp.dev
+
+COSMOS-HGP Pro features (parallel execution, distributed processing, 
+advanced dashboard, ML prediction, enterprise support) are available 
+under separate commercial license terms.
