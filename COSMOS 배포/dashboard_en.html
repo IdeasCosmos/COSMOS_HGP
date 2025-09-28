@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COSMOS Visualization Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.8;
+            font-size: 1.1em;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            padding: 30px;
+        }
+        .card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        .card h3 {
+            margin: 0 0 15px 0;
+            color: #2c3e50;
+            font-size: 1.3em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .image-container {
+            text-align: center;
+            margin: 15px 0;
+        }
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 4px solid #3498db;
+        }
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .stat-label {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        .refresh-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            margin: 10px 5px;
+            transition: background 0.3s ease;
+        }
+        .refresh-btn:hover {
+            background: #2980b9;
+        }
+        .api-links {
+            background: #ecf0f1;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .api-links h4 {
+            margin: 0 0 15px 0;
+            color: #2c3e50;
+        }
+        .api-links a {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin: 5px;
+            font-size: 0.9em;
+            transition: background 0.3s ease;
+        }
+        .api-links a:hover {
+            background: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌌 COSMOS Visualization Dashboard</h1>
+            <p>Real-time System Monitoring and Visualization</p>
+            <div class="header-buttons">
+                <button class="btn" onclick="location.reload()">🔄 Refresh</button>
+                <button class="btn" onclick="generateNew()">✨ Generate New</button>
+                <button class="btn btn-secondary" onclick="window.open('/benchmark-viewer', '_blank')">📊 Benchmark Results</button>
+                <button class="btn btn-secondary" onclick="window.open('/', '_blank')">🇰🇷 Korean Dashboard</button>
+                <button class="btn btn-secondary" onclick="window.open('/docs', '_blank')">📚 API Documentation</button>
+            </div>
+        </div>
+
+        <div class="grid">
+            <!-- Real-time Metrics -->
+            <div class="card">
+                <h3>📊 Real-time Metrics</h3>
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="p95-latency">2.3</div>
+                        <div class="stat-label">P95 Latency (ms)</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="block-events">15</div>
+                        <div class="stat-label">Block Events</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="cap-events">8</div>
+                        <div class="stat-label">Cap Events</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="running-groups">3</div>
+                        <div class="stat-label">Running Groups</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="total-events">200</div>
+                        <div class="stat-label">Total Events</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Layer Heatmap -->
+            <div class="card">
+                <h3>🔥 Layer Heatmap</h3>
+                <div class="image-container">
+                    <img src="/viz/heatmap.png" alt="Layer Heatmap" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div style="display:none; color:#e74c3c;">Image could not be loaded</div>
+                </div>
+            </div>
+
+            <!-- Event Timeline -->
+            <div class="card">
+                <h3>⏱️ Event Timeline</h3>
+                <div class="image-container">
+                    <img src="/viz/timeline.png" alt="Event Timeline" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div style="display:none; color:#e74c3c;">Image could not be loaded</div>
+                </div>
+            </div>
+
+            <!-- Codon Analysis -->
+            <div class="card">
+                <h3>🧬 Codon Pattern Analysis</h3>
+                <div class="image-container">
+                    <img src="/viz/codon_bar.png" alt="Codon Analysis" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div style="display:none; color:#e74c3c;">Image could not be loaded</div>
+                </div>
+            </div>
+
+            <!-- Event Statistics -->
+            <div class="card">
+                <h3>📈 Event Statistics</h3>
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-value">45</div>
+                        <div class="stat-label">Enter Events</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">38</div>
+                        <div class="stat-label">Exit Events</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">25</div>
+                        <div class="stat-label">Block Events</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">18</div>
+                        <div class="stat-label">Cap Events</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">12</div>
+                        <div class="stat-label">Error Events</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- API Links -->
+            <div class="card">
+                <h3>🔗 API Endpoints</h3>
+                <div class="api-links">
+                    <h4>Quick Access</h4>
+                    <a href="/metrics" target="_blank">📊 Real-time Metrics</a>
+                    <a href="/events" target="_blank">📋 Event List</a>
+                    <a href="/viz" target="_blank">🖼️ Visualization List</a>
+                    <a href="/" target="_blank">🏠 Korean Dashboard</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Auto-refresh metrics every 30 seconds
+        setInterval(function() {
+            fetch('/metrics')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('p95-latency').textContent = data.p95_ms || 0;
+                    document.getElementById('block-events').textContent = data.blocks || 0;
+                    document.getElementById('cap-events').textContent = data.caps || 0;
+                    document.getElementById('running-groups').textContent = data.running_groups || 0;
+                    document.getElementById('total-events').textContent = data.total_events || 0;
+                })
+                .catch(error => console.log('Failed to fetch metrics:', error));
+        }, 30000);
+    </script>
+</body>
+</html>
