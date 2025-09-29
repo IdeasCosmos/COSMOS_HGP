@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COSMOS-HGP v4.0 | 대화형 릴리스 노트</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Neutral Tech (Stone, Slate, Cyan) -->
+    <!-- Application Structure Plan: A single-page application with a fixed sidebar for thematic navigation (Overview, Safety, Consistency, Testability, Guidelines) and a main content area. This structure allows users to freely explore the key refactoring themes in any order, which is more intuitive for a technical document than a linear report. Interactive cards within each section reveal detailed information and code snippets on click, promoting active exploration over passive reading. -->
+    <!-- Visualization & Content Choices: 
+        - Overview -> Goal: Inform -> Viz: Donut Chart + Key Stats -> Interaction: Hover -> Justification: Provides a high-level summary of improvement areas. Chart.js for the chart.
+        - Key Changes (Safety, Consistency, etc.) -> Goal: Organize/Explain -> Viz: Interactive Cards in a Grid Layout -> Interaction: Click to expand/reveal details & code -> Justification: Breaks down complex changes into digestible, user-driven chunks. Implemented with HTML/CSS/JS.
+        - Code Examples -> Goal: Compare -> Viz: Side-by-side or toggled code blocks -> Interaction: Click to switch -> Justification: Clearly illustrates the "before vs. after" of the refactoring.
+        - Process Diagram -> Goal: Explain -> Viz: HTML/CSS Flexbox diagram -> Interaction: Static -> Justification: Visually shows where new safety features fit into the execution pipeline.
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; }
+        .sidebar-link { transition: all 0.2s ease-in-out; }
+        .sidebar-link.active, .sidebar-link:hover { background-color: #0891b2; color: white; }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        .card { transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; }
+        .card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .code-block { background-color: #1e293b; color: #e2e8f0; font-family: 'D2Coding', monospace; }
+        .chart-container { position: relative; width: 100%; max-width: 250px; margin-left: auto; margin-right: auto; height: 250px; max-height: 250px; }
+    </style>
+</head>
+<body class="bg-stone-100 text-slate-800">
+    <div class="flex h-screen">
+        <!-- Sidebar Navigation -->
+        <nav id="sidebar" class="w-64 bg-slate-800 text-white p-5 flex flex-col shrink-0">
+            <div class="text-2xl font-bold mb-8 text-cyan-400">COSMOS-HGP v4.0</div>
+            <ul class="space-y-2">
+                <li><a href="#overview" class="sidebar-link block py-2 px-4 rounded-lg active" data-target="overview">개요</a></li>
+                <li><a href="#safety" class="sidebar-link block py-2 px-4 rounded-lg" data-target="safety">🚀 안전성 & 재현성</a></li>
+                <li><a href="#consistency" class="sidebar-link block py-2 px-4 rounded-lg" data-target="consistency">✨ 일관성 & 유지보수성</a></li>
+                <li><a href="#testability" class="sidebar-link block py-2 px-4 rounded-lg" data-target="testability">🧪 테스트 용이성</a></li>
+                <li><a href="#guidelines" class="sidebar-link block py-2 px-4 rounded-lg" data-target="guidelines">📋 운영 가이드라인</a></li>
+            </ul>
+            <div class="mt-auto text-xs text-slate-400">
+                <p>대화형 릴리스 노트</p>
+                <p>&copy; 2025 COSMOS Project</p>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8 overflow-y-auto">
+            <!-- Overview Section -->
+            <section id="overview" class="content-section active">
+                <h1 class="text-4xl font-bold mb-4 text-slate-900">COSMOS-HGP v4.0 리팩터링 릴리스</h1>
+                <p class="text-lg text-slate-600 mb-8">
+                    이번 v4.0 릴리스는 포괄적인 기술 검토를 바탕으로 진행된 주요 리팩터링 버전입니다. 시스템의 <strong>안전성, 일관성, 성능, 테스트 용이성</strong>을 획기적으로 향상시키는 데 중점을 두었습니다.
+                </p>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="md:col-span-1 bg-white p-6 rounded-xl shadow-md flex flex-col justify-center items-center">
+                         <h2 class="text-xl font-bold text-slate-800 mb-4">핵심 개선 영역</h2>
+                        <div class="chart-container">
+                            <canvas id="improvementsChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="md:col-span-2 bg-white p-6 rounded-xl shadow-md">
+                        <h2 class="text-2xl font-bold text-slate-800 mb-4">주요 변경 사항 요약</h2>
+                        <p class="mb-6">이번 업데이트는 시스템의 근본적인 안정성과 예측 가능성을 강화합니다. 각 항목을 클릭하여 자세한 내용을 확인해 보세요.</p>
+                        <ul class="space-y-4">
+                            <li class="flex items-start">
+                                <span class="text-cyan-500 mr-3 mt-1">&#10004;</span>
+                                <div>
+                                    <h3 class="font-bold">결정적 상태 생성</h3>
+                                    <p class="text-slate-600 text-sm">재현성 있는 테스트와 디버깅을 위해 `hashlib`를 도입했습니다.</p>
+                                </div>
+                            </li>
+                             <li class="flex items-start">
+                                <span class="text-cyan-500 mr-3 mt-1">&#10004;</span>
+                                <div>
+                                    <h3 class="font-bold">수치 안정성 확보</h3>
+                                    <p class="text-slate-600 text-sm">모든 연산 후 `NaN`/`Infinity` 값을 자동으로 처리하여 시스템 오류를 방지합니다.</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-cyan-500 mr-3 mt-1">&#10004;</span>
+                                <div>
+                                    <h3 class="font-bold">표준화된 로깅 시스템</h3>
+                                    <p class="text-slate-600 text-sm">모든 `print` 구문을 구조화된 로깅으로 전환하여 유지보수성을 높였습니다.</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-cyan-500 mr-3 mt-1">&#10004;</span>
+                                <div>
+                                    <h3 class="font-bold">프로퍼티 기반 테스트 도입</h3>
+                                    <p class="text-slate-600 text-sm">다양한 엣지 케이스를 자동으로 검증하는 테스트 스위트를 추가했습니다.</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Safety Section -->
+            <section id="safety" class="content-section">
+                <h1 class="text-4xl font-bold mb-4 text-slate-900">🚀 안전성 & 재현성 강화</h1>
+                <p class="text-lg text-slate-600 mb-8">
+                    시스템의 예측 가능성과 안정성은 가장 중요합니다. 이번 릴리스에서는 동일한 입력에 대해 항상 동일한 결과를 보장하고, 예기치 않은 오류로부터 시스템을 보호하는 세 가지 핵심 기능을 도입했습니다.
+                </p>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Card 1 -->
+                    <div class="card bg-white p-6 rounded-xl shadow-md cursor-pointer" onclick="toggleDetails('detail1')">
+                        <h2 class="text-xl font-bold mb-2">결정적 상태 생성</h2>
+                        <p class="text-slate-600">`hash()` 대신 `hashlib.blake2b`를 사용하여 동일 입력에 대해 항상 동일한 초기 상태를 생성합니다.</p>
+                        <div id="detail1" class="hidden mt-4 pt-4 border-t">
+                            <h3 class="font-semibold mb-2">코드 변경점:</h3>
+                            <pre class="code-block rounded-lg p-3 text-sm overflow-x-auto"><code><span class="text-red-400">- state = np.array([hash(str(input_data)) % 100]...)</span>
+<span class="text-green-400">+ state = _seed_state_from_input(input_data, ...)</span></code></pre>
+                        </div>
+                    </div>
+                    <!-- Card 2 -->
+                    <div class="card bg-white p-6 rounded-xl shadow-md cursor-pointer" onclick="toggleDetails('detail2')">
+                        <h2 class="text-xl font-bold mb-2">수치 안정성 (NaN/Inf 방지)</h2>
+                        <p class="text-slate-600">모든 코돈 연산 후 `sanitize()` 유틸리티를 적용하여 `NaN`, `Infinity` 값의 전파를 원천 차단합니다.</p>
+                        <div id="detail2" class="hidden mt-4 pt-4 border-t">
+                             <h3 class="font-semibold mb-2">적용 방식:</h3>
+                             <pre class="code-block rounded-lg p-3 text-sm overflow-x-auto"><code><span class="text-red-400">- result_state = op(state)</span>
+<span class="text-green-400">+ result_state = sanitize(op(state))</span></code></pre>
+                        </div>
+                    </div>
+                    <!-- Card 3 -->
+                    <div class="card bg-white p-6 rounded-xl shadow-md cursor-pointer" onclick="toggleDetails('detail3')">
+                        <h2 class="text-xl font-bold mb-2">나비 효과 제한기</h2>
+                        <p class="text-slate-600">'혁신' 모드에서 무한 증폭을 방지하기 위해 파이프라인 당 이벤트 횟수와 영향도를 모니터링합니다.</p>
+                         <div id="detail3" class="hidden mt-4 pt-4 border-t">
+                             <h3 class="font-semibold mb-2">적용 로직:</h3>
+                              <pre class="code-block rounded-lg p-3 text-sm overflow-x-auto"><code><span class="text-red-400">- if self.policy.should_apply_butterfly_effect():</span>
+<span class="text-green-400">+ if limiter.allow(cumulative_impact):</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Consistency Section -->
+            <section id="consistency" class="content-section">
+                 <h1 class="text-4xl font-bold mb-4 text-slate-900">✨ 일관성 & 유지보수성 향상</h1>
+                <p class="text-lg text-slate-600 mb-8">
+                    복잡한 시스템일수록 코드의 일관성과 명확성은 중요합니다. 정책 파라미터를 표준화하고, 핵심 공식을 통합했으며, 로깅 시스템을 도입하여 디버깅과 향후 기능 확장을 용이하게 만들었습니다.
+                </p>
+                 <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                     <!-- Card 4 -->
+                    <div class="card bg-white p-6 rounded-xl shadow-md cursor-pointer" onclick="toggleDetails('detail4')">
+                        <h2 class="text-xl font-bold mb-2">정책 설정 표준화</h2>
+                        <p class="text-slate-600">임계값, 배치 크기 등 모드별 파라미터를 단일 `POLICY_CONFIG` 딕셔너리로 통합하여 관리합니다.</p>
+                        <div id="detail4" class="hidden mt-4 pt-4 border-t">
+                            <h3 class="font-semibold mb-2">새로운 구조:</h3>
+                            <pre class="code-block rounded-lg p-3 text-xs overflow-x-auto"><code>POLICY_CONFIG = {
+  'stability':  {'thr_mul': 0.7, ...},
+  'innovation': {'thr_mul': 2.2, ...},
+  'adaptive':   {'thr_mul': 1.0, ...},
+}</code></pre>
+                        </div>
+                    </div>
+                     <!-- Card 5 -->
+                    <div class="card bg-white p-6 rounded-xl shadow-md cursor-pointer" onclick="toggleDetails('detail5')">
+                        <h2 class="text-xl font-bold mb-2">누적 영향도 공식 통합</h2>
+                        <p class="text-slate-600">시스템 전반에서 사용되던 영향도 계산 로직을 단일화하여 일관성을 확보하고 잠재적 버그를 제거했습니다.</p>
+                        <div id="detail5" class="hidden mt-4 pt-4 border-t">
+                             <h3 class="font-semibold mb-2">통합 함수:</h3>
+                             <pre class="code-block rounded-lg p-3 text-sm overflow-x-auto"><code>def calculate_cumulative_impact(
+    velocities: List[float], 
+    cap: float
+) -> float:
+    # ... unified logic ...</code></pre>
+                        </div>
+                    </div>
+                     <!-- Card 6 -->
+                    <div class="card bg-white p-6 rounded-xl shadow-md cursor-pointer" onclick="toggleDetails('detail6')">
+                        <h2 class="text-xl font-bold mb-2">구조화된 로깅 시스템</h2>
+                        <p class="text-slate-600">모든 `print()` 구문을 `logging`으로 전환했습니다. 로그 레벨 제어와 구조화된 출력이 가능합니다.</p>
+                         <div id="detail6" class="hidden mt-4 pt-4 border-t">
+                             <h3 class="font-semibold mb-2">제안된 로그 포맷:</h3>
+                              <pre class="code-block rounded-lg p-3 text-xs overflow-x-auto"><code>{
+  "timestamp": "...",
+  "level": "INFO",
+  "message": "Pipeline finished",
+  "details": {
+    "mode": "adaptive",
+    "impact": 0.241,
+    "success": true
+  }
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Testability Section -->
+            <section id="testability" class="content-section">
+                <h1 class="text-4xl font-bold mb-4 text-slate-900">🧪 테스트 용이성 확보</h1>
+                <p class="text-lg text-slate-600 mb-8">
+                    안정적인 소프트웨어는 철저한 테스트를 통해 만들어집니다. `hypothesis` 라이브러리를 활용한 프로퍼티 기반 테스트 스위트를 도입하여, 개발자가 예측하기 어려운 엣지 케이스까지 자동으로 검증합니다.
+                </p>
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h2 class="text-2xl font-bold mb-4">프로퍼티 기반 테스트란?</h2>
+                    <p class="mb-4">
+                        개별 예시를 테스트하는 대신, "이 함수의 결과는 항상 양수여야 한다"와 같은 **속성(property)**을 정의하면, 라이브러리가 수백 개의 다양한 입력값을 자동으로 생성하여 해당 속성이 깨지는 경우가 없는지 검증해주는 강력한 테스트 기법입니다.
+                    </p>
+                    <h3 class="font-semibold mb-2 mt-6">테스트 예시: 누적 캡 불변식 검증</h3>
+                    <p class="text-sm text-slate-600 mb-2">아래 테스트는 `calculate_cumulative_impact` 함수의 결과가 설정된 상한선(`cap`)을 절대 넘지 않는다는 속성을 검증합니다.</p>
+                    <pre class="code-block rounded-lg p-4 text-sm overflow-x-auto"><code>from hypothesis import given, strategies as st
+
+@given(
+    st.lists(st.floats(0, 1)), 
+    st.floats(0, 1)
+)
+def test_cap_never_exceeded(velocities, cap):
+    """
+    `cumulative_impact`는 `cap`보다 클 수 없다.
+    """
+    assert calculate_cumulative_impact(velocities, cap) <= cap</code></pre>
+                </div>
+            </section>
+            
+            <!-- Guidelines Section -->
+            <section id="guidelines" class="content-section">
+                <h1 class="text-4xl font-bold mb-4 text-slate-900">📋 운영 가이드라인</h1>
+                <p class="text-lg text-slate-600 mb-8">
+                    v4.0 시스템을 안정적으로 운영하기 위한 핵심 가이드라인입니다. 시스템 모니터링 시 다음 사항들을 참고하세요.
+                </p>
+                <div class="space-y-6">
+                    <div class="bg-white p-6 rounded-xl shadow-md flex items-start">
+                        <div class="shrink-0 w-12 h-12 bg-cyan-100 text-cyan-600 rounded-full flex items-center justify-center text-2xl mr-5">💡</div>
+                        <div>
+                            <h2 class="text-xl font-bold">혁신 모드 (Innovation Mode)</h2>
+                            <p class="text-slate-600 mt-1">`ButterflyLimiter`에 의해 나비 효과가 자주 억제된다는 경고 로그가 발생하면, 이는 '혁신' 모드의 임계값 승수(`thr_mul`)가 너무 공격적일 수 있다는 신호입니다. 파라미터 조정을 고려해 보세요.</p>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md flex items-start">
+                         <div class="shrink-0 w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center text-2xl mr-5">🛡️</div>
+                        <div>
+                            <h2 class="text-xl font-bold">안정성 모드 (Stability Mode)</h2>
+                            <p class="text-slate-600 mt-1">치명적 오류로 인해 시스템이 자동으로 '안정성' 모드로 전환되는 것은 최우선 순위로 확인해야 할 경고입니다. 즉시 로그를 분석하여 원인을 파악해야 합니다.</p>
+                        </div>
+                    </div>
+                     <div class="bg-white p-6 rounded-xl shadow-md flex items-start">
+                         <div class="shrink-0 w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-2xl mr-5">⏱️</div>
+                        <div>
+                            <h2 class="text-xl font-bold">성능 회귀 테스트</h2>
+                            <p class="text-slate-600 mt-1">마이크로 연산 엔진(`OptimizedMicroOpEngine`)에 주요 변경이 발생한 후에는 반드시 성능 테스트를 실행해야 합니다. 1,000회 배치 실행이 1초 이내에 완료되는 것을 기준으로 성능 저하 여부를 판단할 수 있습니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const links = document.querySelectorAll('.sidebar-link');
+            const sections = document.querySelectorAll('.content-section');
+
+            // Navigation logic
+            function updateActiveState(targetId) {
+                links.forEach(link => {
+                    link.classList.toggle('active', link.dataset.target === targetId);
+                });
+                sections.forEach(section => {
+                    section.classList.toggle('active', section.id === targetId);
+                });
+            }
+
+            document.getElementById('sidebar').addEventListener('click', function(e) {
+                if (e.target.tagName === 'A' && e.target.dataset.target) {
+                    e.preventDefault();
+                    const targetId = e.target.dataset.target;
+                    updateActiveState(targetId);
+                    window.location.hash = targetId;
+                }
+            });
+            
+            // Handle initial hash
+            const initialTarget = window.location.hash.substring(1) || 'overview';
+            updateActiveState(initialTarget);
+
+            // Chart.js initialization
+            const ctx = document.getElementById('improvementsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['안전성', '일관성', '테스트 용이성', '유지보수성'],
+                    datasets: [{
+                        data: [35, 25, 20, 20],
+                        backgroundColor: ['#06b6d4', '#6366f1', '#10b981', '#f97316'],
+                        borderColor: '#ffffff',
+                        borderWidth: 4,
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '65%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 15,
+                                font: {
+                                    family: "'Noto Sans KR', sans-serif",
+                                    size: 12
+                                }
+                            }
+                        },
+                        tooltip: {
+                            bodyFont: {
+                                family: "'Noto Sans KR', sans-serif"
+                            },
+                            titleFont: {
+                                family: "'Noto Sans KR', sans-serif"
+                            }
+                        }
+                    }
+                }
+            });
+        });
+
+        // Card detail toggle logic
+        function toggleDetails(detailId) {
+            const detailElement = document.getElementById(detailId);
+            if (detailElement) {
+                detailElement.classList.toggle('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
