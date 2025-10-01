@@ -9,7 +9,7 @@
 
 **COSMOS-HGP (Cosmic Hierarchical Genetic Processing)** - 차세대 AI 시스템 통합 플랫폼
 
-7계층 구조와 64개 DNA 코돈을 기반으로 한 혁신적인 AI 처리 시스템입니다. FREE와 PRO 두 가지 버전으로 제공되며, 다양한 도메인(AIOps, Finance, Healthcare)에 특화된 컨설팅 기능을 제공합니다.
+7계층 구조와 64개 DNA 코돈을 기반으로 한 혁신적인 AI 처리 시스템입니다. FREE와 PRO 두 가지 버전으로 제공되며, 모든 도메인에 범용적으로 적용 가능한 지능형 분석 기능을 제공합니다.
 
 ---
 
@@ -114,10 +114,10 @@ Hugging Face Spaces에서 제공되는 프리미엄 기능:
 - 📈 **CSV 분석**: 모든 데이터 형식 자동 감지
 - 🔐 **웹로그 분석**: 보안 위협 및 공격 패턴 탐지
 
-### 도메인 전문 컨설팅
-- 🖥️ **AIOps**: IT 운영 자동화 및 장애 예측
-- 💰 **Finance**: 금융 데이터 분석 및 리스크 관리
-- 🏥 **Healthcare**: 의료 데이터 처리 및 패턴 분석
+### 범용 지능형 분석
+- 🔍 **데이터 분석**: 모든 유형의 데이터 패턴 분석 및 인사이트 도출
+- 🤖 **AI 기반 예측**: 도메인 무관 예측 모델링 및 최적화
+- 📊 **비즈니스 인텔리전스**: 산업 분야 구분 없이 적용 가능한 의사결정 지원
 
 ### PRO API 엔드포인트
 ```python
@@ -154,8 +154,8 @@ POST /analyze/csv
 # 웹로그 분석
 POST /analyze/weblog
 
-# 도메인 컨설팅
-POST /consult/{domain}
+# 범용 지능형 분석
+POST /analyze/intelligent
 ```
 
 ---
@@ -262,7 +262,7 @@ pip install -r requirements.txt
 9. 🐛 **자가 디버깅** - 6가지 자동 테스트
 10. 📊 **CSV 분석** - 자동 데이터 분석
 11. 🔐 **웹로그 분석** - 보안 위협 탐지
-12. 💼 **도메인 컨설팅** - AIOps/Finance/Healthcare
+12. 🤖 **범용 지능형 분석** - 모든 도메인 적용 가능
 
 ### 💡 플랜 선택 가이드
 
