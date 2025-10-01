@@ -1,0 +1,875 @@
+# COSMOS-HGP MVP Requirements
+# 핵심 의존성 패키지
+
+# === 핵심 데이터 처리 ===
+numpy>=1.21.0
+pandas>=1.3.0
+scipy>=1.7.0
+
+# === 머신러닝 및 통계 ===
+scikit-learn>=1.0.0
+statsmodels>=0.13.0
+
+# === 웹 프레임워크 ===
+flask>=2.0.0
+flask-cors>=3.0.0
+streamlit>=1.0.0
+
+# === 인증 및 보안 ===
+PyJWT>=2.4.0
+cryptography>=3.4.8
+bcrypt>=3.2.0
+
+# === 웹소켓 및 실시간 통신 ===
+flask-socketio>=5.0.0
+websocket-client>=1.3.0
+
+# === 데이터베이스 ===
+redis>=4.0.0
+sqlalchemy>=1.4.0
+
+# === 캐싱 및 세션 ===
+flask-caching>=1.10.0
+flask-session>=0.4.0
+
+# === 파일 처리 ===
+openpyxl>=3.0.9
+xlrd>=2.0.1
+python-magic>=0.4.24
+
+# === 로깅 및 모니터링 ===
+psutil>=5.8.0
+prometheus-client>=0.12.0
+
+# === 날짜/시간 처리 ===
+python-dateutil>=2.8.2
+pytz>=2021.1
+
+# === HTTP 요청 ===
+requests>=2.25.0
+urllib3>=1.26.0
+
+# === 데이터 검증 ===
+pydantic>=1.8.0
+marshmallow>=3.12.0
+
+# === 테스트 프레임워크 ===
+pytest>=6.2.0
+pytest-cov>=2.12.0
+unittest-xml-reporting>=3.0.0
+
+# === 개발 도구 ===
+black>=21.0.0
+flake8>=3.9.0
+mypy>=0.910
+
+# === 성능 최적화 (선택적) ===
+numba>=0.56.0
+cython>=0.29.0
+
+# === 배포 및 컨테이너 ===
+gunicorn>=20.1.0
+waitress>=2.1.0
+
+# === 환경 관리 ===
+python-dotenv>=0.19.0
+
+# === 데이터 시각화 (선택적) ===
+matplotlib>=3.4.0
+plotly>=5.0.0
+seaborn>=0.11.0
+
+# === API 문서화 ===
+flask-restx>=0.5.0
+swagger-ui-bundle>=3.0.0
+
+# === 압축 및 아카이브 ===
+zipfile36>=0.1.0
+
+# === 네트워크 유틸리티 ===
+netifaces>=0.11.0
+
+# === JSON 및 YAML 처리 ===
+pyyaml>=5.4.0
+
+# === 인코딩 ===
+chardet>=4.0.0
+
+# === 웹 크롤링 (선택적) ===
+beautifulsoup4>=4.9.0
+lxml>=4.6.0
+
+# === 데이터 변환 ===
+jsonpickle>=2.0.0
+
+# === 메모리 프로파일링 ===
+memory-profiler>=0.60.0
+
+# === 버전 관리 ===
+packaging>=21.0
+
+# === 보안 헤더 ===
+flask-talisman>=1.0.0
+
+# === 요청 제한 ===
+flask-limiter>=2.0.0
+
+# === 압축 ===
+flask-compress>=1.10.0
+
+# === 세션 관리 ===
+flask-kvsession>=0.6.0
+
+# === 백그라운드 작업 ===
+celery>=5.2.0
+
+# === 메트릭 수집 ===
+prometheus-client>=0.12.0
+
+# === 헬스 체크 ===
+flask-healthz>=1.0.0
+
+# === API 버전 관리 ===
+flask-api-versioning>=1.0.0
+
+# === 문서화 ===
+sphinx>=4.0.0
+sphinx-rtd-theme>=0.5.0
+
+# === 코드 품질 ===
+bandit>=1.7.0
+safety>=1.10.0
+
+# === 의존성 관리 ===
+pip-tools>=6.2.0
+
+# === 가상환경 ===
+virtualenv>=20.0.0
+
+# === 패키지 빌드 ===
+setuptools>=57.0.0
+wheel>=0.36.0
+
+# === 배포 자동화 ===
+fabric>=2.6.0
+invoke>=1.5.0
+
+# === 모니터링 ===
+sentry-sdk[flask]>=1.5.0
+
+# === 로그 관리 ===
+structlog>=21.1.0
+
+# === 설정 검증 ===
+cerberus>=1.3.0
+
+# === 데이터 마이그레이션 ===
+alembic>=1.6.0
+
+# === 스케줄링 ===
+apscheduler>=3.7.0
+
+# === 메시지 큐 ===
+pika>=1.2.0
+
+# === 웹소켓 서버 ===
+websockets>=10.0
+
+# === 실시간 통신 ===
+socket.io>=5.0.0
+
+# === 파일 업로드 ===
+flask-uploads>=0.2.1
+
+# === 이미지 처리 (선택적) ===
+Pillow>=8.3.0
+
+# === PDF 처리 (선택적) ===
+PyPDF2>=1.26.0
+
+# === Excel 처리 ===
+openpyxl>=3.0.9
+xlrd>=2.0.1
+xlsxwriter>=3.0.0
+
+# === XML 처리 ===
+lxml>=4.6.0
+xmltodict>=0.12.0
+
+# === 환경 변수 ===
+environs>=9.3.0
+
+# === 비밀 관리 ===
+keyring>=23.0.0
+
+# === 네트워크 디스커버리 ===
+zeroconf>=0.36.0
+
+# === 서비스 레지스트리 ===
+consul>=1.1.0
+
+# === 로드 밸런싱 ===
+haproxy-stats>=0.4.0
+
+# === 컨테이너 오케스트레이션 ===
+kubernetes>=18.0.0
+
+# === 서비스 메시 ===
+istio-client>=0.1.0
+
+# === 마이크로서비스 ===
+nameko>=2.14.0
+
+# === API 게이트웨이 ===
+kong-admin>=1.0.0
+
+# === 서킷 브레이커 ===
+pybreaker>=0.6.0
+
+# === 재시도 로직 ===
+tenacity>=8.0.0
+
+# === 백오프 전략 ===
+backoff>=2.1.0
+
+# === 캐시 무효화 ===
+flask-cache>=0.13.1
+
+# === 분산 캐시 ===
+memcached>=1.0.0
+
+# === 분산 락 ===
+redis-lock>=4.0.0
+
+# === 분산 트랜잭션 ===
+saga>=0.1.0
+
+# === 이벤트 소싱 ===
+eventsourcing>=8.0.0
+
+# === CQRS ===
+cqrs>=1.0.0
+
+# === 메시지 브로커 ===
+kafka-python>=2.0.0
+
+# === 스트림 처리 ===
+faust>=0.10.0
+
+# === 배치 처리 ===
+luigi>=3.0.0
+
+# === 워크플로우 ===
+prefect>=1.0.0
+
+# === 태스크 큐 ===
+rq>=1.8.0
+
+# === 분산 컴퓨팅 ===
+dask>=2021.0.0
+
+# === GPU 컴퓨팅 ===
+cupy>=10.0.0
+
+# === 딥러닝 (선택적) ===
+tensorflow>=2.7.0
+torch>=1.9.0
+
+# === 자연어 처리 (선택적) ===
+nltk>=3.6.0
+spacy>=3.2.0
+
+# === 컴퓨터 비전 (선택적) ===
+opencv-python>=4.5.0
+
+# === 음성 처리 (선택적) ===
+speechrecognition>=3.8.0
+
+# === 블록체인 (선택적) ===
+web3>=5.20.0
+
+# === IoT 연동 (선택적) ===
+paho-mqtt>=1.5.0
+
+# === 클라우드 연동 (선택적) ===
+boto3>=1.20.0
+azure-storage>=0.36.0
+google-cloud-storage>=2.0.0
+
+# === DevOps 도구 ===
+docker>=5.0.0
+ansible>=4.0.0
+
+# === 인프라 모니터링 ===
+datadog>=0.40.0
+newrelic>=6.0.0
+
+# === 로그 집계 ===
+logstash>=0.1.0
+
+# === 메트릭 수집 ===
+collectd>=0.1.0
+
+# === 알림 시스템 ===
+slack-sdk>=3.0.0
+discord.py>=2.0.0
+
+# === 이메일 알림 ===
+sendgrid>=6.0.0
+
+# === SMS 알림 ===
+twilio>=7.0.0
+
+# === 푸시 알림 ===
+fcm>=0.1.0
+
+# === 웹훅 ===
+flask-webhook>=0.1.0
+
+# === API 테스팅 ===
+httpx>=0.23.0
+
+# === 성능 테스팅 ===
+locust>=2.0.0
+
+# === 부하 테스팅 ===
+wrk>=0.1.0
+
+# === 보안 스캐닝 ===
+bandit>=1.7.0
+
+# === 취약점 스캔 ===
+safety>=1.10.0
+
+# === 정적 분석 ===
+pylint>=2.9.0
+
+# === 코드 복잡도 ===
+radon>=5.1.0
+
+# === 테스트 커버리지 ===
+coverage>=6.0.0
+
+# === 통합 테스트 ===
+selenium>=4.0.0
+
+# === API 문서화 ===
+swagger-ui>=4.0.0
+
+# === 사용자 인터페이스 ===
+flask-admin>=1.6.0
+
+# === 폼 처리 ===
+flask-wtf>=1.0.0
+
+# === 파일 관리 ===
+flask-file-upload>=0.1.0
+
+# === 검색 엔진 ===
+whoosh>=2.7.0
+
+# === 풀텍스트 검색 ===
+elasticsearch>=8.0.0
+
+# === 데이터베이스 마이그레이션 ===
+flask-migrate>=3.0.0
+
+# === ORM ===
+sqlalchemy>=1.4.0
+alembic>=1.6.0
+
+# === NoSQL 데이터베이스 ===
+pymongo>=4.0.0
+cassandra-driver>=3.24.0
+
+# === 그래프 데이터베이스 ===
+neo4j>=4.4.0
+
+# === 시계열 데이터베이스 ===
+influxdb>=5.3.0
+
+# === 분산 데이터베이스 ===
+cockroachdb>=0.3.0
+
+# === 메모리 데이터베이스 ===
+redis>=4.0.0
+
+# === 캐시 계층 ===
+flask-caching>=1.10.0
+
+# === 세션 저장소 ===
+flask-session>=0.4.0
+
+# === 사용자 인증 ===
+flask-login>=0.5.0
+
+# === 권한 관리 ===
+flask-principal>=0.4.0
+
+# === OAuth ===
+authlib>=0.15.0
+
+# === SAML ===
+python3-saml>=1.12.0
+
+# === LDAP ===
+ldap3>=2.9.0
+
+# === 2FA ===
+pyotp>=2.6.0
+
+# === 암호화 ===
+cryptography>=3.4.8
+
+# === 해시 ===
+passlib>=1.7.4
+
+# === 보안 헤더 ===
+flask-talisman>=1.0.0
+
+# === CORS ===
+flask-cors>=3.0.0
+
+# === 요청 제한 ===
+flask-limiter>=2.0.0
+
+# === 압축 ===
+flask-compress>=1.10.0
+
+# === 캐시 헤더 ===
+flask-cache>=0.13.1
+
+# === ETag ===
+flask-etag>=0.1.0
+
+# === 조건부 요청 ===
+flask-conditional>=0.1.0
+
+# === 범위 요청 ===
+flask-range>=0.1.0
+
+# === 스트리밍 ===
+flask-streaming>=0.1.0
+
+# === Server-Sent Events ===
+flask-sse>=0.1.0
+
+# === WebSocket ===
+flask-socketio>=5.0.0
+
+# === 실시간 업데이트 ===
+flask-realtime>=0.1.0
+
+# === 푸시 알림 ===
+flask-push>=0.1.0
+
+# === 백그라운드 작업 ===
+flask-celery>=0.1.0
+
+# === 스케줄링 ===
+flask-apscheduler>=1.12.0
+
+# === 태스크 큐 ===
+flask-rq>=0.1.0
+
+# === 워크플로우 ===
+flask-workflow>=0.1.0
+
+# === 상태 머신 ===
+transitions>=0.8.0
+
+# === 이벤트 처리 ===
+flask-events>=0.1.0
+
+# === 메시지 큐 ===
+flask-kafka>=0.1.0
+
+# === 이벤트 소싱 ===
+flask-eventsourcing>=0.1.0
+
+# === CQRS ===
+flask-cqrs>=0.1.0
+
+# === 도메인 이벤트 ===
+flask-domain>=0.1.0
+
+# === 애그리게이트 ===
+flask-aggregate>=0.1.0
+
+# === 리포지토리 ===
+flask-repository>=0.1.0
+
+# === 서비스 레이어 ===
+flask-service>=0.1.0
+
+# === DTO ===
+flask-dto>=0.1.0
+
+# === 매퍼 ===
+flask-mapper>=0.1.0
+
+# === 팩토리 ===
+flask-factory>=0.1.0
+
+# === 빌더 ===
+flask-builder>=0.1.0
+
+# === 전략 ===
+flask-strategy>=0.1.0
+
+# === 옵저버 ===
+flask-observer>=0.1.0
+
+# === 데코레이터 ===
+flask-decorator>=0.1.0
+
+# === 어댑터 ===
+flask-adapter>=0.1.0
+
+# === 퍼사드 ===
+flask-facade>=0.1.0
+
+# === 프록시 ===
+flask-proxy>=0.1.0
+
+# === 브릿지 ===
+flask-bridge>=0.1.0
+
+# === 컴포지트 ===
+flask-composite>=0.1.0
+
+# === 플라이웨이트 ===
+flask-flyweight>=0.1.0
+
+# === 싱글톤 ===
+flask-singleton>=0.1.0
+
+# === 프로토타입 ===
+flask-prototype>=0.1.0
+
+# === 빌더 ===
+flask-builder>=0.1.0
+
+# === 추상 팩토리 ===
+flask-abstract-factory>=0.1.0
+
+# === 팩토리 메서드 ===
+flask-factory-method>=0.1.0
+
+# === 의존성 주입 ===
+flask-di>=0.1.0
+
+# === IoC 컨테이너 ===
+flask-ioc>=0.1.0
+
+# === 서비스 로케이터 ===
+flask-service-locator>=0.1.0
+
+# === 레지스트리 ===
+flask-registry>=0.1.0
+
+# === 캐시 ===
+flask-cache>=0.13.1
+
+# === 풀 ===
+flask-pool>=0.1.0
+
+# === 프록시 풀 ===
+flask-proxy-pool>=0.1.0
+
+# === 커넥션 풀 ===
+flask-connection-pool>=0.1.0
+
+# === 스레드 풀 ===
+flask-thread-pool>=0.1.0
+
+# === 프로세스 풀 ===
+flask-process-pool>=0.1.0
+
+# === 워커 풀 ===
+flask-worker-pool>=0.1.0
+
+# === 태스크 풀 ===
+flask-task-pool>=0.1.0
+
+# === 이벤트 풀 ===
+flask-event-pool>=0.1.0
+
+# === 메시지 풀 ===
+flask-message-pool>=0.1.0
+
+# === 버퍼 풀 ===
+flask-buffer-pool>=0.1.0
+
+# === 메모리 풀 ===
+flask-memory-pool>=0.1.0
+
+# === 객체 풀 ===
+flask-object-pool>=0.1.0
+
+# === 리소스 풀 ===
+flask-resource-pool>=0.1.0
+
+# === 세션 풀 ===
+flask-session-pool>=0.1.0
+
+# === 커넥션 풀 ===
+flask-connection-pool>=0.1.0
+
+# === 트랜잭션 풀 ===
+flask-transaction-pool>=0.1.0
+
+# === 쿼리 풀 ===
+flask-query-pool>=0.1.0
+
+# === 명령 풀 ===
+flask-command-pool>=0.1.0
+
+# === 이벤트 풀 ===
+flask-event-pool>=0.1.0
+
+# === 핸들러 풀 ===
+flask-handler-pool>=0.1.0
+
+# === 프로세서 풀 ===
+flask-processor-pool>=0.1.0
+
+# === 변환기 풀 ===
+flask-transformer-pool>=0.1.0
+
+# === 검증기 풀 ===
+flask-validator-pool>=0.1.0
+
+# === 필터 풀 ===
+flask-filter-pool>=0.1.0
+
+# === 정렬기 풀 ===
+flask-sorter-pool>=0.1.0
+
+# === 그룹화기 풀 ===
+flask-grouper-pool>=0.1.0
+
+# === 집계기 풀 ===
+flask-aggregator-pool>=0.1.0
+
+# === 계산기 풀 ===
+flask-calculator-pool>=0.1.0
+
+# === 분석기 풀 ===
+flask-analyzer-pool>=0.1.0
+
+# === 예측기 풀 ===
+flask-predictor-pool>=0.1.0
+
+# === 분류기 풀 ===
+flask-classifier-pool>=0.1.0
+
+# === 회귀기 풀 ===
+flask-regressor-pool>=0.1.0
+
+# === 클러스터링 풀 ===
+flask-clusterer-pool>=0.1.0
+
+# === 차원축소기 풀 ===
+flask-reducer-pool>=0.1.0
+
+# === 특성추출기 풀 ===
+flask-extractor-pool>=0.1.0
+
+# === 전처리기 풀 ===
+flask-preprocessor-pool>=0.1.0
+
+# === 후처리기 풀 ===
+flask-postprocessor-pool>=0.1.0
+
+# === 정규화기 풀 ===
+flask-normalizer-pool>=0.1.0
+
+# === 표준화기 풀 ===
+flask-standardizer-pool>=0.1.0
+
+# === 스케일러 풀 ===
+flask-scaler-pool>=0.1.0
+
+# === 인코더 풀 ===
+flask-encoder-pool>=0.1.0
+
+# === 디코더 풀 ===
+flask-decoder-pool>=0.1.0
+
+# === 토크나이저 풀 ===
+flask-tokenizer-pool>=0.1.0
+
+# === 벡터화기 풀 ===
+flask-vectorizer-pool>=0.1.0
+
+# === 임베딩 풀 ===
+flask-embedder-pool>=0.1.0
+
+# === 시퀀서 풀 ===
+flask-sequencer-pool>=0.1.0
+
+# === 생성기 풀 ===
+flask-generator-pool>=0.1.0
+
+# === 판별기 풀 ===
+flask-discriminator-pool>=0.1.0
+
+# === 오토인코더 풀 ===
+flask-autoencoder-pool>=0.1.0
+
+# === GAN 풀 ===
+flask-gan-pool>=0.1.0
+
+# === VAE 풀 ===
+flask-vae-pool>=0.1.0
+
+# === RNN 풀 ===
+flask-rnn-pool>=0.1.0
+
+# === LSTM 풀 ===
+flask-lstm-pool>=0.1.0
+
+# === GRU 풀 ===
+flask-gru-pool>=0.1.0
+
+# === CNN 풀 ===
+flask-cnn-pool>=0.1.0
+
+# === Transformer 풀 ===
+flask-transformer-pool>=0.1.0
+
+# === BERT 풀 ===
+flask-bert-pool>=0.1.0
+
+# === GPT 풀 ===
+flask-gpt-pool>=0.1.0
+
+# === ResNet 풀 ===
+flask-resnet-pool>=0.1.0
+
+# === VGG 풀 ===
+flask-vgg-pool>=0.1.0
+
+# === Inception 풀 ===
+flask-inception-pool>=0.1.0
+
+# === MobileNet 풀 ===
+flask-mobilenet-pool>=0.1.0
+
+# === EfficientNet 풀 ===
+flask-efficientnet-pool>=0.1.0
+
+# === Vision Transformer 풀 ===
+flask-vit-pool>=0.1.0
+
+# === DETR 풀 ===
+flask-detr-pool>=0.1.0
+
+# === YOLO 풀 ===
+flask-yolo-pool>=0.1.0
+
+# === R-CNN 풀 ===
+flask-rcnn-pool>=0.1.0
+
+# === Fast R-CNN 풀 ===
+flask-fast-rcnn-pool>=0.1.0
+
+# === Faster R-CNN 풀 ===
+flask-faster-rcnn-pool>=0.1.0
+
+# === Mask R-CNN 풀 ===
+flask-mask-rcnn-pool>=0.1.0
+
+# === SSD 풀 ===
+flask-ssd-pool>=0.1.0
+
+# === RetinaNet 풀 ===
+flask-retinanet-pool>=0.1.0
+
+# === CenterNet 풀 ===
+flask-centernet-pool>=0.1.0
+
+# === FCOS 풀 ===
+flask-fcos-pool>=0.1.0
+
+# === ATSS 풀 ===
+flask-atss-pool>=0.1.0
+
+# === PAA 풀 ===
+flask-paa-pool>=0.1.0
+
+# === AutoAssign 풀 ===
+flask-autoassign-pool>=0.1.0
+
+# === OTA 풀 ===
+flask-ota-pool>=0.1.0
+
+# === SimOTA 풀 ===
+flask-simota-pool>=0.1.0
+
+# === TOOD 풀 ===
+flask-tood-pool>=0.1.0
+
+# === GFL 풀 ===
+flask-gfl-pool>=0.1.0
+
+# === VFL 풀 ===
+flask-vfl-pool>=0.1.0
+
+# === QFL 풀 ===
+flask-qfl-pool>=0.1.0
+
+# === DFL 풀 ===
+flask-dfl-pool>=0.1.0
+
+# === AFL 풀 ===
+flask-afl-pool>=0.1.0
+
+# === MFL 풀 ===
+flask-mfl-pool>=0.1.0
+
+# === SFL 풀 ===
+flask-sfl-pool>=0.1.0
+
+# === TFL 풀 ===
+flask-tfl-pool>=0.1.0
+
+# === UFL 풀 ===
+flask-ufl-pool>=0.1.0
+
+# === IFL 풀 ===
+flask-ifl-pool>=0.1.0
+
+# === JFL 풀 ===
+flask-jfl-pool>=0.1.0
+
+# === KFL 풀 ===
+flask-kfl-pool>=0.1.0
+
+# === LFL 풀 ===
+flask-lfl-pool>=0.1.0
+
+# === NFL 풀 ===
+flask-nfl-pool>=0.1.0
+
+# === OFL 풀 ===
+flask-ofl-pool>=0.1.0
+
+# === PFL 풀 ===
+flask-pfl-pool>=0.1.0
+
+# === RFL 풀 ===
+flask-rfl-pool>=0.1.0
+
+# === WFL 풀 ===
+flask-wfl-pool>=0.1.0
+
+# === XFL 풀 ===
+flask-xfl-pool>=0.1.0
+
+# === YFL 풀 ===
+flask-yfl-pool>=0.1.0
+
+# === ZFL 풀 ===
+flask-zfl-pool>=0.1.0

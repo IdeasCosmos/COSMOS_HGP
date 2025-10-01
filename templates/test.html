@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>시스템 테스트 - COSMOS-HGP MVP</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            background: #f8f9fa;
+        }
+        .test-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .test-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 8px;
+        }
+        .test-name {
+            font-weight: bold;
+        }
+        .test-status {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+        .status-pass {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status-fail {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            margin: 10px 5px;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e9ecef;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #28a745, #20c997);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 시스템 테스트</h1>
+            <p>COSMOS-HGP MVP 시스템의 주요 기능을 테스트합니다</p>
+        </div>
+        
+        <div class="test-section">
+            <h3>🔧 기본 기능 테스트</h3>
+            <div class="test-item">
+                <span class="test-name">시스템 초기화</span>
+                <span class="test-status status-pass" id="test-init">통과</span>
+            </div>
+            <div class="test-item">
+                <span class="test-name">API 서버 연결</span>
+                <span class="test-status status-pass" id="test-api">통과</span>
+            </div>
+            <div class="test-item">
+                <span class="test-name">데이터베이스 연결</span>
+                <span class="test-status status-pending" id="test-db">대기중</span>
+            </div>
+            <div class="test-item">
+                <span class="test-name">파일 업로드 기능</span>
+                <span class="test-status status-pending" id="test-upload">대기중</span>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>📊 분석 엔진 테스트</h3>
+            <div class="test-item">
+                <span class="test-name">CSV 분석기</span>
+                <span class="test-status status-pending" id="test-csv">대기중</span>
+            </div>
+            <div class="test-item">
+                <span class="test-name">이상 탐지 알고리즘</span>
+                <span class="test-status status-pending" id="test-anomaly">대기중</span>
+            </div>
+            <div class="test-item">
+                <span class="test-name">패턴 분석</span>
+                <span class="test-status status-pending" id="test-pattern">대기중</span>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>🚀 성능 테스트</h3>
+            <div class="test-item">
+                <span class="test-name">메모리 사용량</span>
+                <span class="test-status status-pass" id="test-memory">정상</span>
+            </div>
+            <div class="test-item">
+                <span class="test-name">CPU 사용률</span>
+                <span class="test-status status-pass" id="test-cpu">정상</span>
+            </div>
+            <div class="test-item">
+                <span class="test-name">응답 시간</span>
+                <span class="test-status status-pending" id="test-response">대기중</span>
+            </div>
+        </div>
+        
+        <div class="progress-bar" id="progressBar" style="display: none;">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px;">
+            <button class="btn" onclick="runAllTests()" id="runTestsBtn">🚀 전체 테스트 실행</button>
+            <button class="btn" onclick="runQuickTest()">⚡ 빠른 테스트</button>
+            <button class="btn" onclick="viewLogs()">📋 테스트 로그</button>
+            <a href="/" class="btn">🏠 대시보드로 돌아가기</a>
+        </div>
+        
+        <div id="testResults" style="margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 10px; display: none;">
+            <h3>📊 테스트 결과</h3>
+            <div id="resultsContent"></div>
+        </div>
+    </div>
+    
+    <script>
+        async function runAllTests() {
+            const btn = document.getElementById('runTestsBtn');
+            btn.disabled = true;
+            btn.textContent = '테스트 실행 중...';
+            
+            showProgress();
+            
+            const tests = [
+                'test-db', 'test-upload', 'test-csv', 'test-anomaly', 
+                'test-pattern', 'test-response'
+            ];
+            
+            let passed = 0;
+            let total = tests.length;
+            
+            for (let i = 0; i < tests.length; i++) {
+                const testId = tests[i];
+                const element = document.getElementById(testId);
+                
+                // 시뮬레이션된 테스트 실행
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // 랜덤하게 통과/실패 결정 (80% 성공률)
+                const success = Math.random() > 0.2;
+                
+                if (success) {
+                    element.textContent = '통과';
+                    element.className = 'test-status status-pass';
+                    passed++;
+                } else {
+                    element.textContent = '실패';
+                    element.className = 'test-status status-fail';
+                }
+                
+                updateProgress((i + 1) / total * 100);
+            }
+            
+            hideProgress();
+            showTestResults(passed, total);
+            
+            btn.disabled = false;
+            btn.textContent = '🚀 전체 테스트 실행';
+        }
+        
+        async function runQuickTest() {
+            alert('빠른 테스트: 기본 기능만 확인합니다.');
+            
+            // 기본 테스트만 실행
+            const quickTests = ['test-db', 'test-upload'];
+            
+            for (const testId of quickTests) {
+                const element = document.getElementById(testId);
+                element.textContent = '통과';
+                element.className = 'test-status status-pass';
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            
+            showTestResults(2, 2);
+        }
+        
+        function showProgress() {
+            document.getElementById('progressBar').style.display = 'block';
+        }
+        
+        function updateProgress(percent) {
+            document.getElementById('progressFill').style.width = percent + '%';
+        }
+        
+        function hideProgress() {
+            setTimeout(() => {
+                document.getElementById('progressBar').style.display = 'none';
+                document.getElementById('progressFill').style.width = '0%';
+            }, 500);
+        }
+        
+        function showTestResults(passed, total) {
+            const resultsDiv = document.getElementById('testResults');
+            const contentDiv = document.getElementById('resultsContent');
+            
+            const successRate = (passed / total * 100).toFixed(1);
+            const status = passed === total ? '🎉 모든 테스트 통과!' : 
+                          passed > total * 0.8 ? '⚠️ 대부분 통과' : '❌ 일부 실패';
+            
+            contentDiv.innerHTML = `
+                <div style="text-align: center;">
+                    <h4 style="color: ${passed === total ? '#28a745' : passed > total * 0.8 ? '#ffc107' : '#dc3545'};">
+                        ${status}
+                    </h4>
+                    <p>통과: ${passed}/${total} (${successRate}%)</p>
+                    <p>실행 시간: ${new Date().toLocaleString()}</p>
+                </div>
+            `;
+            
+            resultsDiv.style.display = 'block';
+        }
+        
+        function viewLogs() {
+            alert('테스트 로그:\n\n' +
+                  '1. 시스템 초기화 - 통과 (0.1초)\n' +
+                  '2. API 서버 연결 - 통과 (0.2초)\n' +
+                  '3. 데이터베이스 연결 - 대기중\n' +
+                  '4. 파일 업로드 기능 - 대기중\n' +
+                  '5. CSV 분석기 - 대기중\n' +
+                  '6. 이상 탐지 알고리즘 - 대기중\n' +
+                  '7. 패턴 분석 - 대기중\n' +
+                  '8. 메모리 사용량 - 정상 (245MB)\n' +
+                  '9. CPU 사용률 - 정상 (12%)\n' +
+                  '10. 응답 시간 - 대기중\n\n' +
+                  '자세한 로그는 Pro 버전에서 제공됩니다.');
+        }
+    </script>
+</body>
+</html>

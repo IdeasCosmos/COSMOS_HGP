@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>분석 결과 - COSMOS-HGP MVP</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        .result-item {
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background: #f8f9fa;
+        }
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .result-title {
+            font-weight: bold;
+            color: #333;
+        }
+        .result-status {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .result-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .detail-item {
+            text-align: center;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+        }
+        .detail-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .detail-label {
+            color: #666;
+            font-size: 0.9em;
+        }
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px 5px;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 분석 결과</h1>
+            <p>최근 실행된 분석 결과들을 확인하세요</p>
+        </div>
+        
+        {% for result in results %}
+        <div class="result-item">
+            <div class="result-header">
+                <div class="result-title">{{ result.filename or result.job_id }}</div>
+                <div class="result-status status-success">완료</div>
+            </div>
+            <div class="result-details">
+                <div class="detail-item">
+                    <div class="detail-value">{{ result.analysis.records if result.analysis else 'N/A' }}</div>
+                    <div class="detail-label">총 레코드</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-value">{{ result.analysis.anomalies if result.analysis else 'N/A' }}</div>
+                    <div class="detail-label">탐지된 이상</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-value">{{ result.file_size if result.file_size else 'N/A' }}</div>
+                    <div class="detail-label">파일 크기 (bytes)</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-value">{{ result.timestamp[:19] if result.timestamp else 'N/A' }}</div>
+                    <div class="detail-label">실행 시간</div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        
+        {% if not results %}
+        <div style="text-align: center; padding: 50px; color: #666;">
+            <h3>📄 분석 결과가 없습니다</h3>
+            <p>먼저 파일을 업로드하고 분석을 실행해주세요.</p>
+        </div>
+        {% endif %}
+        
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="/" class="btn">🏠 대시보드로 돌아가기</a>
+            <a href="/test" class="btn">🧪 시스템 테스트</a>
+        </div>
+    </div>
+</body>
+</html>
