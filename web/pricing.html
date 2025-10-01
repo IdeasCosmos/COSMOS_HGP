@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>COSMOS-HGP PRO</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://js.stripe.com/v3/"></script>
+<style>
+  :root{--gold1:#f7d774;--gold2:#caa64d;--gold3:#9b7b2f;--text:#1b1b1b;--muted:#6b6b6b}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Playfair Display",serif;background:#fff;color:var(--text)}
+  .wrap{max-width:760px;margin:0 auto;padding:64px 20px;text-align:center}
+  h1{font-size:48px;letter-spacing:.5px;margin:0 0 8px}
+  p.sub{color:var(--muted);margin:0 0 32px}
+  .card{border:1px solid #eee;border-radius:16px;padding:40px 28px;margin:0 auto;max-width:520px;
+        box-shadow:0 8px 28px rgba(0,0,0,.06)}
+  .price{font-size:56px;margin:8px 0 16px}
+  .per{font-size:18px;color:var(--muted)}
+  .btn{appearance:none;border:0;border-radius:999px;padding:16px 28px;font-size:18px;
+       color:#201a00;cursor:pointer;transition:transform .05s ease,box-shadow .2s ease;
+       background:linear-gradient(135deg,var(--gold1),var(--gold2) 60%,var(--gold3));
+       box-shadow:0 6px 18px rgba(202,166,77,.35)}
+  .btn:hover{transform:translateY(-1px)}
+  .btn:active{transform:translateY(0)}
+  .fine{font-size:14px;color:var(--muted);margin-top:18px}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>COSMOS-HGP PRO</h1>
+    <p class="sub">우주의 질서로 시스템의 카오스를 제어</p>
+    <div class="card">
+      <div class="price">$5<span class="per">/월</span></div>
+      <p style="color:var(--muted);margin:8px 0 20px;font-size:18px">☕ 커피를 구매하시면 APP을 드립니다.</p>
+      <button id="subscribe" class="btn" type="button">지금 시작</button>
+      <div class="fine">7일 이내 전액 환불. 취소는 언제든 가능.</div>
+    </div>
+  </div>
+
+<script>
+  const stripe = Stripe("pk_test_1234567890");
+  document.getElementById("subscribe").addEventListener("click", () => {
+    stripe.redirectToCheckout({
+      lineItems: [{ price: "price_1234567890", quantity: 1 }],
+      mode: "subscription",
+      successUrl: "https://cosmos-hgp.com/success",
+      cancelUrl: "https://cosmos-hgp.com/pricing"
+    }).then(function (res) {
+      if (res.error) alert(res.error.message || "Checkout error");
+    });
+  });
+</script>
+</body>
+</html>
+

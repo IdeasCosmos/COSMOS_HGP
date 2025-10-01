@@ -1,0 +1,31 @@
+# COSMOS-HGP 기본 종속성
+# Python 3.8+ 필요
+
+# 웹 프레임워크 (FREE 버전용)
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+
+# 데이터 검증
+pydantic>=2.5.0
+
+# 수치 계산
+numpy>=1.24.0
+pandas>=2.0.0
+
+# 파일 업로드
+python-multipart>=0.0.6
+
+# HTTP 클라이언트
+httpx>=0.25.0
+
+# 로깅
+loguru>=0.7.0
+
+# 환경 변수
+python-dotenv>=1.0.0
+
+# 개발 도구 (선택사항)
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+black>=22.0.0
+flake8>=5.0.0

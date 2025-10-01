@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>COSMOS-HGP API Documentation</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    --primary: #667eea;
+    --secondary: #764ba2;
+    --gold: #f7d774;
+    --text: #2d3748;
+    --bg: #f7fafc;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    line-height: 1.7;
+    color: var(--text);
+    background: var(--bg);
+    margin: 0;
+    padding: 0;
+  }
+  .lang-switch {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 100;
+  }
+  .lang-switch a {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    margin-left: 0.5rem;
+    text-decoration: none;
+    background: white;
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition: all 0.3s;
+  }
+  .lang-switch a:hover, .lang-switch a.active {
+    background: var(--primary);
+    color: white;
+  }
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+  }
+  h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  h2 {
+    font-size: 1.8rem;
+    margin-top: 3rem;
+    margin-bottom: 1rem;
+    color: var(--primary);
+    border-bottom: 3px solid var(--gold);
+    padding-bottom: 0.5rem;
+  }
+  h3 {
+    font-size: 1.3rem;
+    margin-top: 2rem;
+    color: var(--secondary);
+  }
+  .endpoint {
+    background: white;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+  .method {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.25rem;
+    font-weight: 700;
+    font-size: 0.875rem;
+    margin-right: 0.5rem;
+  }
+  .get { background: #48bb78; color: white; }
+  .post { background: #4299e1; color: white; }
+  code {
+    background: #edf2f7;
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.25rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+  }
+  pre {
+    background: #2d3748;
+    color: #e2e8f0;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+  }
+  pre code {
+    background: none;
+    color: inherit;
+    padding: 0;
+  }
+  .table-wrap {
+    overflow-x: auto;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+  }
+  th, td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  th {
+    background: var(--primary);
+    color: white;
+    font-weight: 600;
+  }
+  .badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+  .badge-auth { background: #fbd38d; color: #744210; }
+  .badge-no-auth { background: #9ae6b4; color: #22543d; }
+</style>
+</head>
+<body>
+  <div class="lang-switch">
+    <a href="API_DOCS_ko.html">한국어</a>
+    <a href="API_DOCS_en.html" class="active">English</a>
+  </div>
+
+  <div class="container">
+    <h1>⚜️ COSMOS-HGP API Documentation</h1>
+    <p>RESTful API Reference for Hierarchical Gradient Propagation System</p>
+
+    <h2>🔐 Authentication</h2>
+    <p>All <strong>PRO</strong> endpoints require a Bearer token:</p>
+    <pre><code>Authorization: Bearer test_key_12345</code></pre>
+
+    <h2>📡 Endpoints</h2>
+
+    <div class="endpoint">
+      <h3>
+        <span class="method get">GET</span>
+        <code>/</code>
+        <span class="badge badge-no-auth">No Auth</span>
+      </h3>
+      <p><strong>Health Check</strong> - Server status verification</p>
+      
+      <h4>Response</h4>
+      <pre><code>{
+  "status": "COSMOS-HGP PRO API",
+  "version": "1.0"
+}</code></pre>
+    </div>
+
+    <div class="endpoint">
+      <h3>
+        <span class="method get">GET</span>
+        <code>/health</code>
+        <span class="badge badge-no-auth">No Auth</span>
+      </h3>
+      <p><strong>Status Check</strong></p>
+      
+      <h4>Response</h4>
+      <pre><code>{
+  "healthy": true
+}</code></pre>
+    </div>
+
+    <div class="endpoint">
+      <h3>
+        <span class="method post">POST</span>
+        <code>/codon/analyze</code>
+        <span class="badge badge-auth">Auth Required</span>
+      </h3>
+      <p><strong>DNA Codon Analysis</strong> - Convert Python code into DNA codons</p>
+      
+      <h4>Request</h4>
+      <pre><code>{
+  "code": "def hello():\n    x = 1\n    for i in range(10):\n        print(i)"
+}</code></pre>
+
+      <h4>Response</h4>
+      <pre><code>{
+  "codons": ["AAA", "TAA", "GAA"],
+  "layer_mapping": {
+    "L1_QUANTUM": 0.12,
+    "L2_ATOMIC": 0.20,
+    "L3_MOLECULAR": 0.25
+  }
+}</code></pre>
+
+      <h4>Error</h4>
+      <pre><code>{
+  "detail": "Invalid Python code syntax"
+}</code></pre>
+    </div>
+
+    <div class="endpoint">
+      <h3>
+        <span class="method post">POST</span>
+        <code>/velocity/calculate</code>
+        <span class="badge badge-auth">Auth Required</span>
+      </h3>
+      <p><strong>Velocity Calculation</strong> - Calculate escape velocity per layer</p>
+      
+      <h4>Request</h4>
+      <pre><code>{
+  "layer": 1,
+  "impact": 0.25
+}</code></pre>
+
+      <h4>Response</h4>
+      <pre><code>{
+  "threshold": 0.12,
+  "blocked": true,
+  "recommendation": "block"
+}</code></pre>
+
+      <h4>Error</h4>
+      <pre><code>{
+  "detail": "Invalid layer provided: 8"
+}</code></pre>
+    </div>
+
+    <h2>⚠️ Error Codes</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Meaning</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>400</code></td>
+            <td>Bad Request</td>
+            <td>Invalid request format or parameters</td>
+          </tr>
+          <tr>
+            <td><code>401</code></td>
+            <td>Unauthorized</td>
+            <td>Authentication failed (missing/invalid API key)</td>
+          </tr>
+          <tr>
+            <td><code>500</code></td>
+            <td>Internal Server Error</td>
+            <td>Server internal error</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>⏱️ Rate Limits</h2>
+    <ul>
+      <li><strong>PRO</strong>: 10,000 calls per month</li>
+      <li><strong>Rate Limit</strong>: 10 requests per second</li>
+    </ul>
+
+    <h2>🐍 Python Client</h2>
+    <pre><code>from cosmos import CosmosAPI
+
+# Initialize API client
+api = CosmosAPI(api_key="test_key_12345")
+
+# Codon analysis
+result = api.analyze_codon("""
+def fibonacci(n):
+    if n <= 1:
+        return n
+    return fibonacci(n-1) + fibonacci(n-2)
+""")
+print(result)
+
+# Velocity calculation
+velocity = api.calculate_velocity(layer=3, impact=0.26)
+print(velocity)</code></pre>
+
+    <h2>💡 cURL Examples</h2>
+    <h3>Codon Analysis</h3>
+    <pre><code>curl -X POST "http://localhost:7860/codon/analyze" \
+  -H "Authorization: Bearer test_key_12345" \
+  -H "Content-Type: application/json" \
+  -d '{"code": "def hello():\n    x = 1"}'</code></pre>
+
+    <h3>Velocity Calculation</h3>
+    <pre><code>curl -X POST "http://localhost:7860/velocity/calculate" \
+  -H "Authorization: Bearer test_key_12345" \
+  -H "Content-Type: application/json" \
+  -d '{"layer": 1, "impact": 0.25}'</code></pre>
+
+    <hr style="margin: 3rem 0; border: none; border-top: 2px solid #e2e8f0;">
+    
+    <p style="text-align: center; color: #718096;">
+      <strong>COSMOS-HGP</strong> · Hierarchical Gradient Propagation<br>
+      <a href="README_en.html" style="color: var(--primary);">Main Documentation</a> ·
+      <a href="https://github.com/IdeasCosmos/COSMOS_HGP" style="color: var(--primary);">GitHub</a>
+    </p>
+  </div>
+</body>
+</html>
+

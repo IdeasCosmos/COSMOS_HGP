@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>COSMOS-HGP API Documentation</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>
+  // 브라우저 기본 언어 감지
+  const lang = navigator.language || navigator.userLanguage;
+  if (lang.startsWith("ko")) {
+    window.location.href = "API_DOCS_ko.html";
+  } else {
+    window.location.href = "API_DOCS_en.html";
+  }
+</script>
+<style>
+  body {
+    font-family: system-ui, -apple-system, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  }
+  .container {
+    text-align: center;
+    background: white;
+    padding: 3rem;
+    border-radius: 1rem;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  a {
+    display: inline-block;
+    margin: 0.5rem;
+    padding: 0.75rem 2rem;
+    text-decoration: none;
+    color: white;
+    background: #f5576c;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition: transform 0.2s;
+  }
+  a:hover {
+    transform: translateY(-2px);
+  }
+</style>
+</head>
+<body>
+  <noscript>
+    <div class="container">
+      <h1>📚 COSMOS-HGP API</h1>
+      <p>Please enable JavaScript, or choose your language:</p>
+      <a href="API_DOCS_ko.html">한국어 (Korean)</a>
+      <a href="API_DOCS_en.html">English</a>
+    </div>
+  </noscript>
+</body>
+</html>
+
