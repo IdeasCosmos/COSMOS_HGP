@@ -40,10 +40,22 @@ COSMOS_MVP1001/
 ├── 📊 universal_csv_analyzer.py # 범용 CSV 분석기
 ├── 📊 unified_cosmos.py    # 통합 COSMOS 시스템
 ├── 📖 requirements.txt     # Python 의존성
-└── 📖 README.md           # 프로젝트 문서
+├── 📖 README.md           # 프로젝트 문서
+└── 📁 docs/                # 상세 문서
+   ├── DETAILED_README.md  # 우아한 연미장 스타일 상세 README
+   ├── ARCHITECTURE.md     # 아키텍처 심층 분석
+   ├── EXAMPLES.md         # 사용 사례
+   └── PHILOSOPHY.md       # 설계 철학
 ```
 
-> **상세 구조**: [ARCHITECTURE_MVP.md](./ARCHITECTURE_MVP.md) 참조
+## 📚 상세 문서
+
+프로젝트의 심층적인 내용은 다음 문서를 참조하세요:
+
+- **[설계 철학](./docs/PHILOSOPHY.md)** - COSMOS-HGP의 핵심 개념과 우주적 은유
+- **[아키텍처](./docs/ARCHITECTURE.md)** - 7계층 구조, 충격 전파, 성능 최적화 등
+- **[사용 사례](./docs/EXAMPLES.md)** - 금융, 의료, 제조, 전력 그리드 등 실제 적용 예시
+- **[상세 README](./docs/DETAILED_README.md)** - 우아한 연미장 스타일의 상세 프로젝트 설명
 
 ## 🚀 빠른 시작
 
