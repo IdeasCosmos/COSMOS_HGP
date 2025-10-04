@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  cosmos:
+    build: .
+    container_name: cosmos-hgp
+    ports:
+      - "5001:5001"    # Backend API
+    environment:
+      - NODE_ENV=production
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./data:/app/data  # 데이터 영속성
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5001/health')"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+  # 개발 환경용 (선택사항)
+  cosmos-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: cosmos-hgp-dev
+    profiles: ["dev"]  # docker-compose --profile dev up
+    ports:
+      - "5001:5001"
+      - "5173:5173"
+    volumes:
+      - ./:/app
+      - /app/web/node_modules
+      - /app/venv
+    environment:
+      - NODE_ENV=development
+      - PYTHONUNBUFFERED=1
+    command: >
+      bash -c "
+      python simple_backend.py &
+      cd web && npm run dev
+      "

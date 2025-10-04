@@ -1,381 +1,681 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React,{useMemo,useRef,useState}from"react";
-import{AnimatePresence,motion}from"framer-motion";
-import{Area,AreaChart,CartesianGrid,ResponsiveContainer,Tooltip,XAxis,YAxis}from"recharts";
-import{LayoutDashboard,BookOpen,Key,CreditCard,Settings}from"lucide-react";
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 
-/* Design System */
-const DS={primary:"#FFD700",secondary:"#FFA500",bg:"#FFFFFF",surface:"#F9F9F9",text:"#333",border:"#E0E0E0"};
-const cx=(...c)=>c.filter(Boolean).join(" ");
-const API_URL=window.location.hostname==="localhost"?"http://localhost:7860":`http://${window.location.hostname}:7860`;
+/**
+ * COSMOS-HGP Complete Integration Dashboard
+ * 7계층 구조 + DNA 코돈 + MetaBall + 실시간 WebSocket
+ */
 
-/* Ripple */
-const RippleButton=({className,children,onClick,...p})=>{
-  const ref=useRef(null);const[r,setR]=useState([]);
-  return(<button ref={ref} onClick={e=>{const b=ref.current.getBoundingClientRect();const s=Math.max(b.width,b.height);const x=e.clientX-b.left-s/2;const y=e.clientY-b.top-s/2;const id=crypto.randomUUID();setR(v=>[...v,{id,x,y,s}]);onClick&&onClick(e);setTimeout(()=>setR(v=>v.filter(t=>t.id!==id)),600)}} className={cx("relative overflow-hidden rounded-full px-4 py-2 font-medium shadow transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",className)} {...p}>
-      <span className="relative z-10">{children}</span>
-    {r.map(t=>(<span key={t.id} style={{left:t.x,top:t.y,width:t.s,height:t.s}} className="pointer-events-none absolute rounded-full bg-white/40 animate-[ripple_0.6s_ease-out]"/>))}
-      <style>{`@keyframes ripple{from{transform:scale(0);opacity:.6}to{transform:scale(2.5);opacity:0}}`}</style>
-  </button>);
-};
+// ============================================================================
+// COSMOS Bridge - Python 백엔드 연결
+// ============================================================================
 
-/* Header */
-const Header=({apiKey,setApiKey})=>(
-  <header className="sticky top-0 z-20 backdrop-blur border-b" style={{borderColor:DS.border}}>
-    <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
-      <div className="flex items-center gap-2"><span className="text-2xl">⚜️</span><span className="text-lg font-semibold" style={{color:DS.text}}>COSMOS-HGP Premium</span></div>
-      <div className="flex items-center gap-2">
-        <input aria-label="api-key" type="password" placeholder="API Key" value={apiKey} onChange={e=>setApiKey(e.target.value)} className="ml-3 w-48 rounded-md border px-2 py-1 text-sm" style={{borderColor:DS.border,background:DS.surface}}/>
-        <RippleButton className="ml-2 bg-gradient-to-b from-[#FFD700] to-[#FFA500] text-[#111]" onClick={()=>window.location.href="../pricing.html"}>Get PRO</RippleButton>
-      </div>
-    </div>
-  </header>
-);
+class CosmosBridge {
+  constructor() {
+    this.listeners = new Set();
+    this.ws = null;
+    this.connectionAttempts = 0;
+    this.maxReconnectAttempts = 5;
+  }
 
-/* Sidebar */
-const Sidebar=()=>(
-  <aside className="hidden lg:block w-64 border-r h-[calc(100vh-56px)] sticky top-14" style={{borderColor:DS.border,background:DS.bg}}>
-    <nav className="p-4 space-y-1 text-sm">
-      <SideItem icon={<LayoutDashboard size={18}/>} label="Dashboard" active/>
-      <SideItem icon={<BookOpen size={18}/>} label="Documentation"/>
-      <SideItem icon={<Key size={18}/>} label="API Keys"/>
-      <SideItem icon={<CreditCard size={18}/>} label="Billing"/>
-      <SideItem icon={<Settings size={18}/>} label="Settings"/>
-    </nav>
-  </aside>
-);
-const SideItem=({icon,label,active,href})=>(<a href={href||"#"} className={cx("flex items-center gap-2 rounded-md px-3 py-2",active?"bg-[#FFF7D6] text-[#111] font-medium":"hover:bg-[#FFF7D6]/60")}>{icon}<span>{label}</span></a>);
+  connect(wsUrl = 'ws://localhost:5001') {
+    if (this.ws?.readyState === WebSocket.OPEN) return;
 
-/* Small UI */
-const Spinner=()=>(<span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-[#FFA500] border-r-transparent"/>);
-const Badge=({children})=>(<span className="rounded-full border px-3 py-1 text-xs" style={{borderColor:DS.border,background:DS.surface}}>{children}</span>);
+    try {
+      // HTTP 연결 테스트 먼저
+      fetch('http://localhost:5001/health')
+        .then(response => response.json())
+        .then(data => {
+          console.log('Backend health check:', data);
+          // 백엔드가 정상이면 WebSocket 연결 시도
+          this.ws = new WebSocket(wsUrl);
+          this.setupWebSocketEvents();
+        })
+        .catch(error => {
+          console.error('Backend not available:', error);
+          this.notify({ type: 'connection', status: 'error' });
+        });
+    } catch (e) {
+      console.error('Connection failed:', e);
+      this.notify({ type: 'connection', status: 'error' });
+    }
+  }
 
-/* Previews */
-const DualityModePreview=()=>(<motion.div className="h-24 w-full rounded-lg" style={{background:"linear-gradient(90deg,#FFF7D6,#FFFFFF)"}} animate={{backgroundPositionX:["0%","100%"]}} transition={{repeat:Infinity,duration:2,ease:"easeInOut"}}/>);
-const DNACodonPreview=()=>(<motion.div className="grid h-24 w-full grid-cols-8 gap-1">{Array.from({length:32}).map((_,i)=>(<motion.div key={i} className="rounded-sm" style={{background:i%3?"#FFE794":"#FFF4C2"}} animate={{scale:[1,1.08,1]}} transition={{repeat:Infinity,duration:1.8,delay:i*.03}}/>))}</motion.div>);
-const PlaceholderPreview=()=>(<motion.div className="h-24 w-full rounded-lg border" style={{borderColor:DS.border,background:DS.surface}} animate={{opacity:[.8,1,.8]}} transition={{repeat:Infinity,duration:2}}/>);
+  setupWebSocketEvents() {
+    if (!this.ws) return;
+    
+    this.ws.onopen = () => {
+      console.log('✓ COSMOS Engine connected');
+      this.connectionAttempts = 0;
+      this.notify({ type: 'connection', status: 'connected' });
+    };
 
-/* Feature Card */
-const FeatureCard=({item,onOpen})=>(
-  <motion.div whileHover={{y:-6}} className="group relative rounded-2xl border p-4 shadow-sm" style={{borderColor:DS.border,background:"#fff"}}>
-    <div className="absolute right-3 top-3">{item.locked&&(<span className="rounded-full bg-neutral-900/80 px-2 py-0.5 text-xs text-white">🔒 PRO</span>)}</div>
-    <div className="mb-2 flex items-center gap-2"><span className="text-xl">{item.icon}</span><h3 className="text-base font-semibold">{item.title}</h3></div>
-    <p className="mb-3 line-clamp-3 text-sm text-neutral-600">{item.desc}</p>
-    <div className="mb-3">{item.preview?<item.preview/>:<PlaceholderPreview/>}</div>
-    <div className="flex justify-end">
-      <RippleButton onClick={()=>onOpen(item)} className="opacity-0 group-hover:opacity-100 transition bg-gradient-to-b from-[#FFD700] to-[#FFA500] text-[#111]">자세히 보기</RippleButton>
-    </div>
-  </motion.div>
-);
+    this.ws.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.execution_result) {
+          const beads = this.transformExecution(data.execution_result);
+          this.notify({ type: 'execution', beads });
+        }
+      } catch (e) {
+        console.error('Parse error:', e);
+      }
+    };
 
-/* Generic Modal */
-const Modal=({open,onClose,children})=>(
-  <AnimatePresence>
-    {open&&(
-      <motion.div className="fixed inset-0 z-40 grid place-items-center bg-black/40 p-4" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}>
-        <motion.div className="w-full max-w-3xl rounded-2xl border bg-white p-5" style={{borderColor:DS.border}} initial={{y:30,opacity:0}} animate={{y:0,opacity:1}} exit={{y:20,opacity:0}}>
-          {children}
-          <div className="mt-4 text-right">
-            <RippleButton onClick={onClose} className="bg-neutral-100">닫기</RippleButton>
+    this.ws.onerror = (error) => {
+      console.error('WebSocket error:', error);
+      this.notify({ type: 'connection', status: 'error' });
+    };
+
+    this.ws.onclose = () => {
+      console.log('WebSocket closed');
+      this.notify({ type: 'connection', status: 'disconnected' });
+      this.attemptReconnect('ws://localhost:5001');
+    };
+  }
+
+  attemptReconnect(wsUrl) {
+    if (this.connectionAttempts >= this.maxReconnectAttempts) return;
+    
+    this.connectionAttempts++;
+    const delay = Math.min(1000 * Math.pow(2, this.connectionAttempts), 30000);
+    
+    console.log(`Reconnecting in ${delay/1000}s (attempt ${this.connectionAttempts})`);
+    setTimeout(() => this.connect(wsUrl), delay);
+  }
+
+  transformExecution(execution) {
+    const { execution_path = [], metrics = {}, mode = 'stability' } = execution;
+    
+    return execution_path.map((step, i) => ({
+      id: `exec_${Date.now()}_${i}`,
+      impact: Math.max(0, Math.min(1, step.impact || 0.1)),
+      blocked: step.status === 'BLOCKED',
+      cat: (step.layer_number - 1) % 7,
+      layer: step.layer_number,
+      codon: step.codon || 'AAA',
+      ruleName: step.rule,
+      threshold: step.threshold || 0.33,
+      mode,
+      status: step.status,
+      timestamp: Date.now()
+    }));
+  }
+
+  subscribe(callback) {
+    this.listeners.add(callback);
+    return () => this.listeners.delete(callback);
+  }
+
+  notify(data) {
+    this.listeners.forEach(cb => cb(data));
+  }
+
+  disconnect() {
+    if (this.ws) {
+      this.ws.close();
+      this.ws = null;
+    }
+  }
+
+  async executeRemote(group, input, mode = 'stability') {
+    try {
+      const response = await fetch('http://localhost:5000/api/cosmos/execute', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ group, input, profile: mode })
+      });
+
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      return await response.json();
+    } catch (e) {
+      console.error('Remote execution failed:', e);
+      throw e;
+    }
+  }
+}
+
+// ============================================================================
+// BeadFlow Physics Engine
+// ============================================================================
+
+class BeadFlowPhysics {
+  constructor(layout, threshold) {
+    this.layout = layout;
+    this.threshold = threshold;
+    this.beads = [];
+  }
+
+  initBeads(series) {
+    this.beads = series.map((s, i) => this.createBead(s, i, series.length));
+    return this.beads;
+  }
+
+  createBead(item, index, total) {
+    const cat = item.cat ?? (index % 7);
+    const layer = item.layer ?? ((cat % 7) + 1);
+    const impact = Math.max(0, Math.min(1, item.impact ?? 0.1));
+    const blocked = item.blocked || (impact / Math.max(0.01, this.threshold)) >= 1;
+    
+    const baseRadius = 4.0;
+    const impactScale = 0.9 + impact * 0.6;
+    const radius = baseRadius * impactScale;
+
+    const inlets = this.layout.inlets(total);
+    const startPos = inlets[index] || inlets[0];
+
+    return {
+      id: item.id || `b${index}`,
+      cat, layer, impact, blocked,
+      stage: blocked ? 'black' : impact / this.threshold >= 0.75 ? 'near' : 'gold',
+      threshold: this.threshold,
+      r: radius,
+      p: { x: startPos.x, y: startPos.y },
+      v: { x: 0, y: 0 },
+      phase: 0,
+      jitter: 0.5 + Math.random() * 0.75,
+      ruleName: item.ruleName,
+      status: item.status,
+      mode: item.mode
+    };
+  }
+
+  step() {
+    const { bins, router, outlet } = this.layout;
+    
+    for (const bead of this.beads) {
+      if (bead.phase >= 3) continue;
+
+      const target = bead.phase === 0 ? bins[bead.cat] :
+                     bead.phase === 1 ? router : outlet;
+
+      const dx = target.x - bead.p.x;
+      const dy = target.y - bead.p.y;
+      const ax = dx * 0.010 * bead.jitter;
+      const ay = dy * 0.010 * bead.jitter + (bead.phase === 2 ? 0.15 : 0.06);
+
+      bead.v.x = (bead.v.x + ax) * 0.965;
+      bead.v.y = (bead.v.y + ay) * 0.965;
+      bead.p.x += bead.v.x;
+      bead.p.y += bead.v.y;
+
+      // Phase transitions
+      const distance = Math.hypot(target.x - bead.p.x, target.y - bead.p.y);
+      if (distance < Math.max(8, bead.r * 0.6)) {
+        if (bead.phase === 0) {
+          if (bead.blocked) {
+            bead.phase = 3;
+            bead.v.x = bead.v.y = 0;
+          } else {
+            bead.phase = 1;
+          }
+        } else if (bead.phase === 1) {
+          bead.phase = 2;
+        } else if (bead.phase === 2) {
+          bead.phase = 3;
+        }
+      }
+    }
+  }
+}
+
+// ============================================================================
+// Main Dashboard Component
+// ============================================================================
+
+export default function CosmosBeadFlowDashboard() {
+  // State management
+  const [series, setSeries] = useState(makeDemoSeries(32));
+  const [engineStatus, setEngineStatus] = useState('disconnected');
+  const [stats, setStats] = useState({
+    executions: 0,
+    cascades: 0,
+    mode: 'stability',
+    avgImpact: 0
+  });
+  
+  // Configuration
+  const [threshold, setThreshold] = useState(0.33);
+  const [binCount, setBinCount] = useState(7);
+  const [running, setRunning] = useState(true);
+  const [mode, setMode] = useState('stability');
+
+  // Refs
+  const canvasRef = useRef(null);
+  const bridgeRef = useRef(null);
+  const physicsRef = useRef(null);
+  const rafRef = useRef(0);
+
+  // Layout computation - 반응형으로 변경
+  const canvasRef2 = useRef(null);
+  const [dimensions, setDimensions] = useState({ W: 1400, H: 700 });
+  const PAD = 20;
+  const layout = useMemo(() => computeLayout(dimensions.W, dimensions.H, PAD, binCount), [dimensions.W, dimensions.H, PAD, binCount]);
+
+  // 캔버스 크기 조정
+  useEffect(() => {
+    const resizeCanvas = () => {
+      if (canvasRef.current) {
+        const rect = canvasRef.current.getBoundingClientRect();
+        const newW = Math.max(800, rect.width);
+        const newH = Math.max(400, rect.height);
+        setDimensions({ W: newW, H: newH });
+        
+        canvasRef.current.width = newW;
+        canvasRef.current.height = newH;
+      }
+    };
+
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    return () => window.removeEventListener('resize', resizeCanvas);
+  }, []);
+
+  // Initialize bridge
+  useEffect(() => {
+    bridgeRef.current = new CosmosBridge();
+    
+    const unsubscribe = bridgeRef.current.subscribe((message) => {
+      if (message.type === 'connection') {
+        setEngineStatus(message.status);
+      } else if (message.type === 'execution') {
+        setSeries(prev => [...prev, ...message.beads].slice(-200));
+        setStats(prev => ({
+          ...prev,
+          executions: prev.executions + message.beads.length,
+          cascades: prev.cascades + message.beads.filter(b => b.blocked).length
+        }));
+      }
+    });
+
+    bridgeRef.current.connect();
+
+    return () => {
+      unsubscribe();
+      bridgeRef.current.disconnect();
+    };
+  }, []);
+
+  // Initialize physics
+  useEffect(() => {
+    physicsRef.current = new BeadFlowPhysics(layout, threshold);
+    physicsRef.current.initBeads(series);
+    drawFrame(canvasRef.current, physicsRef.current.beads, layout, threshold);
+  }, [series, threshold, layout]);
+
+  // Animation loop
+  useEffect(() => {
+    if (!running) return;
+    
+    const loop = () => {
+      if (physicsRef.current) {
+        physicsRef.current.step();
+        drawFrame(canvasRef.current, physicsRef.current.beads, layout, threshold);
+      }
+      rafRef.current = requestAnimationFrame(loop);
+    };
+    
+    rafRef.current = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [running, layout, threshold]);
+
+  // Remote execution
+  const executeRemote = async () => {
+    try {
+      const input = Array.from({ length: 10 }, () => Math.random() * 10);
+      
+      // 백엔드가 연결되어 있으면 원격 실행
+      if (bridgeRef.current && engineStatus === 'connected') {
+        await bridgeRef.current.executeRemote('standard_pipeline', input, mode);
+      } else {
+        // 백엔드 연결이 없으면 로컬 데모 실행
+        console.log('Backend not connected, running demo execution');
+        const newBeads = makeDemoSeries(8).map(bead => ({
+          ...bead,
+          mode,
+          timestamp: Date.now()
+        }));
+        setSeries(prev => [...prev, ...newBeads].slice(-200));
+        setStats(prev => ({
+          ...prev,
+          executions: prev.executions + newBeads.length,
+          cascades: prev.cascades + newBeads.filter(b => b.blocked).length
+        }));
+      }
+    } catch (e) {
+      console.error('Execution failed:', e);
+      // 오류 시에도 데모 데이터로 대체
+      const newBeads = makeDemoSeries(8);
+      setSeries(prev => [...prev, ...newBeads].slice(-200));
+    }
+  };
+
+  return (
+    <div className="flex h-screen w-full flex-col bg-white">
+      {/* Header */}
+      <header className="flex items-center justify-between border-b px-6 py-4">
+        <div className="flex items-center gap-4">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-orange-500">
+            <span className="text-lg font-bold text-black">⚛</span>
           </div>
-        </motion.div>
-      </motion.div>
-    )}
-  </AnimatePresence>
-);
-
-/* Hero */
-const Hero=({apiKey,health,featuresCount})=>(
-  <section className="mb-4 rounded-2xl border p-5" style={{borderColor:DS.border,background:"#fff"}}>
-    <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-      <div>
-        <h1 className="text-xl font-semibold">COSMOS-HGP Premium Dashboard</h1>
-        <p className="text-sm text-neutral-600">Server: {health} • PRO Features: {featuresCount}</p>
-      </div>
-      <div className="flex items-center gap-2"><Badge>React 18</Badge><Badge>Tailwind</Badge><Badge>Framer</Badge><Badge>Recharts</Badge></div>
-    </div>
-  </section>
-);
-
-/* FREE Engine */
-const FreeEngineSection=({onLocalRun,onApiRun,series,loading,avgImpact,input,threshold,setInput,setThreshold,sendPath})=>(
-  <section className="rounded-2xl border p-5 bg-white" style={{borderColor:DS.border}}>
-      <h2 className="mb-3 text-lg font-semibold">FREE • Basic Engine</h2>
-      <div className="grid gap-4 md:grid-cols-2">
-        <div className="space-y-3">
-        <label className="block text-sm">데이터</label>
-        <input className="w-full rounded-lg border px-3 py-2" style={{borderColor:DS.border,background:DS.surface}} value={input} onChange={e=>setInput(e.target.value)} placeholder="1,2,3,4,5"/>
-        <div><label className="block text-sm">Threshold: {threshold.toFixed(2)}</label><input type="range" min={0} max={1} step={.01} value={threshold} onChange={e=>setThreshold(+e.target.value)} className="w-full accent-[#FFA500]"/></div>
-        <div className="flex items-center gap-2 flex-wrap">
-          <RippleButton onClick={onLocalRun} className="bg-gradient-to-b from-[#FFD700] to-[#FFA500] text-[#111]">로컬</RippleButton>
-          <RippleButton onClick={onApiRun} className="bg-neutral-100">API</RippleButton>
-          <RippleButton onClick={sendPath} className="bg-neutral-100">경로</RippleButton>
-          {loading&&<Spinner/>}<span className="text-sm text-neutral-600">평균: {avgImpact}</span>
+          <div>
+            <h1 className="text-xl font-bold">COSMOS-HGP Executive Dashboard</h1>
+            <p className="text-xs text-gray-600">Hierarchical Gradient Propagation • Duality Architecture</p>
           </div>
-          </div>
-      <div className="h-64 rounded-xl border p-2" style={{borderColor:DS.border,background:DS.surface}}>
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={series}>
-            <defs><linearGradient id="gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={DS.primary} stopOpacity={.9}/><stop offset="100%" stopColor={DS.secondary} stopOpacity={.2}/></linearGradient></defs>
-            <CartesianGrid stroke="#eee"/><XAxis dataKey="idx"/><YAxis/><Tooltip contentStyle={{borderRadius:12,borderColor:DS.border,background:"#fff"}}/>
-            <Area type="monotone" dataKey="value" stroke={DS.secondary} fill="url(#gold)"/>
-            </AreaChart>
-          </ResponsiveContainer>
         </div>
-      </div>
-    </section>
-  );
-
-/* Codon */
-const CodonSection=({code,setCode,onAnalyze,codonUsage,result,loading})=>(
-  <section className="rounded-2xl border p-5 bg-white" style={{borderColor:DS.border}}>
-    <h2 className="mb-3 text-lg font-semibold">DNA 코돈</h2>
-    <div className="grid gap-4 md:grid-cols-2">
-      <div className="space-y-2">
-        <label className="text-sm">Code</label>
-        <textarea value={code} onChange={e=>setCode(e.target.value)} rows={8} className="w-full rounded-lg border px-3 py-2 font-mono text-xs" style={{borderColor:DS.border,background:DS.surface}}/>
+        
         <div className="flex items-center gap-2">
-          <RippleButton onClick={onAnalyze} className="bg-gradient-to-b from-[#FFD700] to-[#FFA500] text-[#111]">{loading?<><Spinner/> 분석중</>:"분석"}</RippleButton>
-          <small className="text-xs text-neutral-600">{codonUsage}/50</small>
+          <span className={`rounded-full px-3 py-1 text-xs font-medium ${
+            engineStatus === 'connected' ? 'bg-green-100 text-green-800' :
+            engineStatus === 'error' ? 'bg-red-100 text-red-800' :
+            'bg-gray-100 text-gray-600'
+          }`}>
+            {engineStatus === 'connected' ? '● Connected' :
+             engineStatus === 'error' ? '● Error' :
+             '○ Offline'}
+          </span>
+          
+          <span className="rounded-full border px-3 py-1 text-xs bg-gray-50">
+            {mode.charAt(0).toUpperCase() + mode.slice(1)} Mode
+          </span>
         </div>
+        
+        <div className="flex items-center gap-2">
+          <button
+            onClick={executeRemote}
+            className="rounded-lg px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600"
+          >
+            Execute
+          </button>
       </div>
-      <div>
-        <div className="text-xs mb-1 text-neutral-600">결과</div>
-        <pre className="h-44 overflow-auto rounded-lg border p-3 text-xs" style={{borderColor:DS.border,background:"#fff"}}>{result?JSON.stringify(result,null,2):"결과"}</pre>
-      </div>
-    </div>
-  </section>
-);
-
-/* Velocity */
-const VelocitySection=({layer,setLayer,impact,setImpact,onCalc,result,loading})=>(
-  <section className="rounded-2xl border p-5 bg-white" style={{borderColor:DS.border}}>
-    <h2 className="mb-3 text-lg font-semibold">7계층 속도</h2>
-    <div className="grid gap-4 md:grid-cols-2">
-      <div className="grid grid-cols-2 gap-3">
-        <div><label className="text-sm">Layer</label><input type="number" min={1} max={7} value={layer} onChange={e=>setLayer(+e.target.value)} className="w-full rounded-lg border px-3 py-2" style={{borderColor:DS.border,background:DS.surface}}/></div>
-        <div><label className="text-sm">Impact</label><input type="number" step="0.01" min={0} max={1} value={impact} onChange={e=>setImpact(+e.target.value)} className="w-full rounded-lg border px-3 py-2" style={{borderColor:DS.border,background:DS.surface}}/></div>
-        <div className="col-span-2"><RippleButton onClick={onCalc} className="bg-gradient-to-b from-[#FFD700] to-[#FFA500] text-[#111]">{loading?<><Spinner/> 계산중</>:"계산"}</RippleButton></div>
-      </div>
-      <div>
-        <div className="text-xs mb-1 text-neutral-600">결과</div>
-        <pre className="h-32 overflow-auto rounded-lg border p-3 text-xs" style={{borderColor:DS.border,background:"#fff"}}>{result?JSON.stringify(result,null,2):"결과"}</pre>
-      </div>
-    </div>
-  </section>
-);
-
-/* Duality */
-const DualitySection=({mode,setMode,onSwitch,result,loading})=>(
-  <section className="rounded-2xl border p-5 bg-white" style={{borderColor:DS.border}}>
-    <h2 className="mb-3 text-lg font-semibold">이중성 모드</h2>
-    <div className="grid gap-4 md:grid-cols-2">
-      <div className="flex items-center gap-3">
-        <label className="text-sm">Mode</label>
-        <select value={mode} onChange={e=>setMode(e.target.value)} className="rounded-lg border px-3 py-2" style={{borderColor:DS.border,background:DS.surface}}>
+      </header>
+      
+      {/* Control Panel */}
+      <div className="flex items-center gap-4 border-b px-6 py-3 bg-yellow-50">
+        <label className="flex items-center gap-2 text-sm">
+          <span>Mode</span>
+          <select
+            value={mode}
+            onChange={(e) => setMode(e.target.value)}
+            className="rounded-md border px-2 py-1"
+          >
           <option value="stability">Stability</option>
           <option value="innovation">Innovation</option>
           <option value="adaptive">Adaptive</option>
         </select>
-        <RippleButton onClick={onSwitch} className="bg-gradient-to-b from-[#FFD700] to-[#FFA500] text-[#111]">{loading?<><Spinner/> 전환</>:"전환"}</RippleButton>
+        </label>
+        
+        <label className="flex items-center gap-2 text-sm">
+          <span>Threshold</span>
+          <input
+            type="range"
+            min={0}
+            max={1}
+            step={0.01}
+            value={threshold}
+            onChange={(e) => setThreshold(parseFloat(e.target.value))}
+            className="w-32"
+          />
+          <span>{threshold.toFixed(2)}</span>
+        </label>
+        
+        <label className="flex items-center gap-2 text-sm">
+          <span>Layers</span>
+          <input
+            type="range"
+            min={1}
+            max={7}
+            value={binCount}
+            onChange={(e) => setBinCount(parseInt(e.target.value))}
+            className="w-24"
+          />
+          <span>{binCount}</span>
+        </label>
+        
+        <div className="ml-auto flex items-center gap-4 text-xs text-gray-600">
+          <span>Beads: <strong>{series.length}</strong></span>
+          <span>Executions: <strong>{stats.executions}</strong></span>
+          <span>Cascades: <strong>{stats.cascades}</strong></span>
+        </div>
       </div>
-      <div>
-        <div className="text-xs mb-1 text-neutral-600">결과</div>
-        <pre className="h-24 overflow-auto rounded-lg border p-3 text-xs" style={{borderColor:DS.border,background:"#fff"}}>{result?JSON.stringify(result,null,2):"결과"}</pre>
+      
+      {/* Canvas */}
+      <div className="relative flex-1 bg-gray-50">
+        <canvas 
+          ref={canvasRef} 
+          width={dimensions.W} 
+          height={dimensions.H} 
+          className="h-full w-full block mx-auto"
+          style={{ 
+            maxWidth: '100%', 
+            maxHeight: '100%',
+            objectFit: 'contain'
+          }}
+        />
+        
+        {!running && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-20">
+            <button
+              onClick={() => setRunning(true)}
+              className="rounded-full bg-white px-8 py-4 text-lg font-medium shadow-lg"
+            >
+              ▶ Resume
+            </button>
+          </div>
+        )}
       </div>
-    </div>
-  </section>
-);
-
-/* Path Visualizer */
-const PathViz=({paths})=>{
-  const w=900,h=220,pad=12;
-  return(<section className="rounded-2xl border p-5 bg-white" style={{borderColor:DS.border}}>
-    <h2 className="mb-3 text-lg font-semibold">경로 시각화</h2>
-    <svg viewBox={`0 0 ${w} ${h}`} className="w-full rounded-lg border" style={{borderColor:DS.border,background:"#fff"}}>
-      <defs><linearGradient id="pw" x1="0" x2="1"><stop offset="0%" stopColor="#FFD700"/><stop offset="100%" stopColor="#FFA500"/></linearGradient></defs>
-      {paths.map((seg,i)=>{
-        const d=seg.points.map((p,j)=>`${j?"L":"M"}${pad+p.x*(w-2*pad)} ${h-pad-p.y*(h-2*pad)}`).join(" ");
-        const sw=1+Math.max(.5,seg.impact*6);
-        const col=seg.blocked?"#ef4444":"url(#pw)";
-        return(<path key={i} d={d} fill="none" stroke={col} strokeWidth={sw} strokeOpacity={seg.blocked?.8:.95} strokeLinecap="round"/>);
-      })}
-    </svg>
-    <p className="mt-2 text-xs text-neutral-600">골드=정상, 빨강=차단, 굵기=impact</p>
-  </section>);
-};
-
-/* Pro Features (8개) */
-const FEAT={
-  codon:{ep:"/codon/analyze",method:"POST",preview:DNACodonPreview,desc:"64개 코돈 분석",icon:"🧬"},
-  velocity:{ep:"/velocity/calculate",method:"POST",preview:PlaceholderPreview,desc:"7계층 임계값",icon:"🚀"},
-  process:{ep:"/pro/process",method:"POST",preview:PlaceholderPreview,desc:"예측+양방향+자가치유",icon:"⚙️"},
-  batch:{ep:"/pro/batch",method:"POST",preview:PlaceholderPreview,desc:"병렬 처리",icon:"📦"},
-  dualitySwitch:{ep:"/pro/duality/switch",method:"POST",preview:DualityModePreview,desc:"모드 전환",icon:"🎭"},
-  thresholdAdj:{ep:"/pro/threshold/adjust",method:"POST",preview:PlaceholderPreview,desc:"임계값 조정",icon:"🎚️"},
-  telemetry:{ep:"/pro/telemetry",method:"GET",preview:PlaceholderPreview,desc:"텔레메트리",icon:"📡"},
-  stats:{ep:"/pro/stats",method:"GET",preview:PlaceholderPreview,desc:"통계",icon:"📊"},
-};
-
-const ProFeaturesGrid=({onOpen})=>{
-  const items=Object.entries(FEAT).map(([slug,v])=>({slug,title:labelize(slug),icon:v.icon,locked:true,preview:v.preview,desc:v.desc}));
-  return(<section className="mt-6"><h2 className="mb-3 text-lg font-semibold">PRO Features (8개)</h2><div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{items.map(it=>(<FeatureCard key={it.slug} item={it} onOpen={onOpen}/>))}</div></section>);
-};
-
-const labelize=s=>({codon:"DNA 코돈",velocity:"7계층 속도",process:"프로세스",batch:"배치",dualitySwitch:"이중성",thresholdAdj:"임계값",telemetry:"텔레메트리",stats:"통계"}[s]||s);
-
-/* PRO Modal */
-const ProModal=({open,featureName,onClose})=>(
-  <Modal open={open} onClose={onClose}>
-    <h2 className="text-lg font-semibold">🔒 PRO 전용</h2>
-    <h3 className="mt-1">{featureName}</h3>
-    <p className="mt-2 text-sm text-neutral-700">PRO 구독이 필요합니다.</p>
-    <div className="mt-3"><span className="text-2xl font-bold">$5/월</span></div>
-    <a href="../pricing.html"><button className="mt-3 rounded-full px-4 py-2 bg-gradient-to-b from-[#FFD700] to-[#FFA500] text-[#111]">구독</button></a>
-  </Modal>
-);
-
-/* Root */
-export default function Dashboard(){
-  const[apiKey,setApiKey]=useState("");
-  const[health,setHealth]=useState("…");const[featuresCount,setFeaturesCount]=useState("…");
-
-  const fetchPublic=async()=>{
-    try{
-      const r1=await fetch(`${API_URL}/health`).then(r=>r.json()).catch(()=>null);
-      const r2=await fetch(`${API_URL}/pro/features`).then(r=>r.json()).catch(()=>null);
-      setHealth(r1?.healthy?"✅":"❌");setFeaturesCount(r2?.features?.length||"—");
-    }catch{setHealth("offline")}
-  };
-
-  const[proOpen,setProOpen]=useState(false);const[proFeat,setProFeat]=useState("");
-  const showProModal=name=>{setProFeat(name);setProOpen(true);};
-
-  const callAPI=async(endpoint,data=null,method="POST")=>{
-    const opt={method,headers:{"Content-Type":"application/json"}};
-    if(endpoint.includes("/pro/")||endpoint==="/velocity/calculate"||endpoint==="/codon/analyze"){
-      if(!apiKey){showProModal(endpoint);throw new Error("API key required");}
-      opt.headers["Authorization"]=`Bearer ${apiKey}`;
-    }
-    if(data&&method!=="GET") opt.body=JSON.stringify(data);
-    const res=await fetch(`${API_URL}${endpoint}`,opt);
-    if(!res.ok)throw new Error(`HTTP ${res.status}`);
-    return res.json();
-  };
-
-  const[input,setInput]=useState("1,2,3,4,5");const[threshold,setThreshold]=useState(.5);
-  const[series,setSeries]=useState([]);const[fLoading,setFLoading]=useState(false);
-  const avgImpact=useMemo(()=>series.length?(series.reduce((a,b)=>a+b.impact,0)/series.length).toFixed(3):"0.000",[series]);
-
-  const runLocalFree=async()=>{
-    setFLoading(true);await new Promise(r=>setTimeout(r,120));
-    const nums=input.split(/[,\s]+/).map(Number).filter(Number.isFinite);
-    const data=nums.map((v,i)=>{const imp=Math.tanh(v/(i+1)*.6);const blocked=imp>=threshold;const value=blocked?v:v*(1+(threshold-imp)*.3);return{idx:i+1,value:+value.toFixed(3),impact:+imp.toFixed(3),blocked};});
-    setSeries(data);setFLoading(false);
-  };
-
-  const runApiFree=async()=>{
-    setFLoading(true);
-    try{
-      const nums=input.split(/[,\s]+/).map(Number).filter(Number.isFinite);
-      const payload=nums.map((v,i)=>({layer:Math.min(7,i+1),impact:Math.min(.99,Math.abs(v)/(i+2))}));
-      const outs=await Promise.all(payload.map(p=>callAPI("/velocity/calculate",p).catch(e=>({error:String(e)}))));
-      const data=outs.map((o,i)=>({idx:i+1,value:o.blocked?nums[i]:nums[i]*(o.threshold?1+(o.threshold-.1)*.2:1),impact:+payload[i].impact.toFixed(3),blocked:!!o.blocked}));
-      setSeries(data);
-    }catch(e){console.error(e)}
-    setFLoading(false);
-  };
-
-  const[paths,setPaths]=useState([]);
-  const sendPath=()=>{if(!series.length)return;
-    const maxV=Math.max(...series.map(s=>s.value||0))||1;
-    const pts=series.map((s,i)=>({x:i/(series.length-1||1),y:Math.min(1,(s.value||0)/maxV)}));
-    const blocked=series.some(s=>s.blocked);const impact=series.reduce((a,b)=>a+b.impact,0)/(series.length||1);
-    setPaths(p=>[...p.slice(-3),{points:pts,impact,blocked}]);
-  };
-
-  const[codonUsage,setCodonUsage]=useState(0);
-  const[code,setCode]=useState(`def process(data):\n    return [x*2 for x in data]`);
-  const[codonRes,setCodonRes]=useState(null);const[codonLoading,setCodonLoading]=useState(false);
-  const analyzeCodon=async()=>{
-    if(!apiKey&&codonUsage>=50){alert("FREE 한도 초과!");showProModal("DNA 코돈");return;}
-    setCodonLoading(true);
-    try{const r=await callAPI("/codon/analyze",{code});setCodonUsage(x=>x+1);setCodonRes(r);}catch(e){setCodonRes({error:String(e)})}
-    setCodonLoading(false);
-  };
-
-  const[layer,setLayer]=useState(1);const[impact,setImpact]=useState(.25);
-  const[velRes,setVelRes]=useState(null);const[velLoading,setVelLoading]=useState(false);
-  const calcVelocity=async()=>{setVelLoading(true);try{const r=await callAPI("/velocity/calculate",{layer,impact});setVelRes(r);}catch(e){setVelRes({error:String(e)})}setVelLoading(false);};
-
-  const[mode,setMode]=useState("stability");const[dualRes,setDualRes]=useState(null);const[dualLoading,setDualLoading]=useState(false);
-  const switchDuality=async()=>{setDualLoading(true);try{const r=await callAPI("/pro/duality/switch",{mode});setDualRes(r);}catch(e){setDualRes({error:String(e)})}setDualLoading(false);};
-
-  const[open,setOpen]=useState(false);const[active,setActive]=useState(null);
-  const[loading,setLoading]=useState(false);const[apiResult,setApiResult]=useState(null);const[apiError,setApiError]=useState(null);
-
-  const openFeature=it=>{setActive(it);setOpen(true);setApiResult(null);setApiError(null);};
-  const runFeature=async()=>{
-    if(!active)return;
-    const def=FEAT[active.slug];if(!def)return;
-    if(!apiKey){showProModal(active.title);return;}
-    setLoading(true);setApiError(null);setApiResult(null);
-    try{
-      const sample={codon:{code:"def f():\n  return 1"},velocity:{layer:1,impact:.25},process:{data:[1,2,3]},batch:{data_list:[[1,2],[3,4]]},dualitySwitch:{mode:"stability"},thresholdAdj:{layer:1,value:.15},telemetry:null,stats:null}[active.slug];
-      const res=await callAPI(def.ep,sample,def.method||"POST");
-      setApiResult(res);
-    }catch(e){setApiError(e.message||String(e))}
-    setLoading(false);
-  };
-
-  React.useEffect(()=>{fetchPublic();},[]);
-
-  return(
-    <div className="min-h-screen" style={{background:`linear-gradient(180deg,#FFFFFF,#FFFFFF 60%,#FFF7D6)`,color:DS.text}}>
-      <Header apiKey={apiKey} setApiKey={setApiKey}/>
-      <div className="mx-auto flex max-w-7xl">
-        <Sidebar/>
-        <div className="flex-1">
-          <main className="mx-auto w-full max-w-7xl p-4">
-            <Hero apiKey={apiKey} health={health} featuresCount={featuresCount}/>
-            <FreeEngineSection onLocalRun={runLocalFree} onApiRun={runApiFree} series={series} loading={fLoading} avgImpact={avgImpact} input={input} threshold={threshold} setInput={setInput} setThreshold={setThreshold} sendPath={sendPath}/>
-            <CodonSection code={code} setCode={setCode} onAnalyze={analyzeCodon} codonUsage={codonUsage} result={codonRes} loading={codonLoading}/>
-            <VelocitySection layer={layer} setLayer={setLayer} impact={impact} setImpact={setImpact} onCalc={calcVelocity} result={velRes} loading={velLoading}/>
-            <DualitySection mode={mode} setMode={setMode} onSwitch={switchDuality} result={dualRes} loading={dualLoading}/>
-            <PathViz paths={paths}/>
-            <ProFeaturesGrid onOpen={openFeature}/>
-          </main>
-    </div>
-    </div>
-
-  <AnimatePresence>
-        {open&&(
-          <motion.div className="fixed inset-0 z-40 grid place-items-center bg-black/40 p-4" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}>
-            <motion.div className="w-full max-w-3xl rounded-2xl border bg-white p-5" style={{borderColor:DS.border}} initial={{y:30,opacity:0}} animate={{y:0,opacity:1}} exit={{y:20,opacity:0}}>
-          <div className="flex items-start justify-between gap-4">
-                <h3 className="text-lg font-semibold">{active?.icon} {active?.title}</h3>
-                <RippleButton onClick={()=>setOpen(false)} className="bg-neutral-100">닫기</RippleButton>
-          </div>
-              <p className="mt-2 text-sm text-neutral-700">{active?.desc}</p>
-          <div className="mt-4 grid gap-4 md:grid-cols-2">
-            <div>
-                  <div className="mb-2 text-xs font-medium text-neutral-600">데모</div>
-                  <div className="mb-3">{active?.preview?<active.preview/>:<PlaceholderPreview/>}</div>
-                  <RippleButton onClick={runFeature} className="bg-gradient-to-b from-[#FFD700] to-[#FFA500] text-[#111]">{loading?<><Spinner/> 호출중</>:"API 호출"}</RippleButton>
-            </div>
-            <div>
-                  <div className="mb-2 text-xs font-medium text-neutral-600">응답</div>
-                  <pre className="h-48 overflow-auto rounded-lg border p-3 text-xs" style={{borderColor:DS.border,background:"#fff"}}>
-{apiError?String(apiError):apiResult?JSON.stringify(apiResult,null,2):"응답"}
-                  </pre>
-            </div>
-          </div>
-        </motion.div>
-      </motion.div>
-    )}
-  </AnimatePresence>
-
-      <ProModal open={proOpen} featureName={proFeat} onClose={()=>setProOpen(false)}/>
+      
+      {/* Footer */}
+      <footer className="flex items-center justify-between border-t px-6 py-3">
+        <div className="flex items-center gap-4 text-xs text-gray-600">
+          <span>v2.0.0</span>
+          <span>•</span>
+          <span>7 Layers • 64 Codons • 3 Modes</span>
+          <span>•</span>
+          <span>Last update: {new Date().toLocaleTimeString()}</span>
+        </div>
+        
+        <button
+          onClick={() => setRunning(v => !v)}
+          className="rounded-md border px-3 py-1 text-xs"
+        >
+          {running ? 'Pause' : 'Play'}
+        </button>
+      </footer>
     </div>
   );
+}
+
+// ============================================================================
+// Drawing Functions
+// ============================================================================
+
+function drawFrame(canvas, beads, layout, threshold) {
+  if (!canvas) return;
+  
+  const ctx = canvas.getContext('2d');
+  const { W, H } = layout;
+  
+  // Clear
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(0, 0, W, H);
+  
+  // Grid
+  ctx.strokeStyle = '#F5F5F5';
+  ctx.lineWidth = 1;
+  for (let x = 100; x < W; x += 100) {
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, H);
+    ctx.stroke();
+  }
+  for (let y = 100; y < H; y += 100) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(W, y);
+    ctx.stroke();
+  }
+  
+  // Infrastructure
+  drawInfrastructure(ctx, layout);
+  
+  // Paths
+  drawPaths(ctx, beads, layout);
+  
+  // Beads
+  for (const bead of beads) {
+    const color = bead.blocked ? '#000000' : getBeadColor(bead, threshold);
+    drawCircle(ctx, bead.p.x, bead.p.y, bead.r, color, 0.96);
+  }
+  
+  // Badge
+  drawBadge(ctx, 16, 16, `Threshold ${threshold.toFixed(2)}`);
+}
+
+function drawInfrastructure(ctx, layout) {
+  // 7개 레이어 빈
+  layout.bins.forEach((bin, i) => {
+    drawRoundRect(ctx, bin.x - 30, bin.y - 28, 60, 56, 10, '#FFF7D6', '#E0E0E0');
+    drawText(ctx, `L${i + 1}`, bin.x - 8, bin.y + 4, '12px', '#444');
+  });
+  
+  // 라우터
+  const r = layout.router;
+  drawRoundRect(ctx, r.x - 48, r.y - 26, 96, 52, 12, '#FFF2B0', '#E0E0E0');
+  drawText(ctx, 'Router', r.x - 22, r.y + 4, '12px', '#444');
+  
+  // 아웃렛
+  const o = layout.outlet;
+  ctx.fillStyle = '#FFF3C6';
+  ctx.strokeStyle = '#E0E0E0';
+  ctx.beginPath();
+  ctx.moveTo(o.x - 30, o.y - 30);
+  ctx.arc(o.x - 30, o.y, 30, -Math.PI / 2, Math.PI / 2);
+  ctx.lineTo(o.x + 12, o.y);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+}
+
+function drawPaths(ctx, beads, layout) {
+  for (const bead of beads) {
+    const bin = layout.bins[bead.cat];
+    const router = layout.router;
+    const outlet = layout.outlet;
+    
+    if (bead.blocked) {
+      ctx.setLineDash([6, 6]);
+      ctx.strokeStyle = '#ef4444';
+    } else {
+      ctx.setLineDash([]);
+      ctx.strokeStyle = '#F3C94B';
+    }
+    
+    ctx.lineWidth = 1.5;
+    ctx.globalAlpha = 0.3;
+    
+    ctx.beginPath();
+    ctx.moveTo(bin.x, bin.y);
+    ctx.lineTo(router.x - 10, router.y);
+    ctx.stroke();
+    
+    if (!bead.blocked) {
+      ctx.beginPath();
+      ctx.moveTo(router.x + 10, router.y);
+      ctx.lineTo(outlet.x - 12, outlet.y);
+      ctx.stroke();
+    }
+    
+    ctx.globalAlpha = 1.0;
+    ctx.setLineDash([]);
+  }
+}
+
+function getBeadColor(bead, threshold) {
+  const ratio = bead.impact / Math.max(0.01, threshold);
+  if (ratio >= 0.75) return '#1E1E1E';
+  if (ratio >= 0.5) return '#6A4A00';
+  return '#E8B500';
+}
+
+// ============================================================================
+// Utility Functions
+// ============================================================================
+
+function computeLayout(W, H, PAD, binCount) {
+  const bins = Array.from({ length: binCount }).map((_, i) => ({
+    x: Math.floor(W / 3) + i * Math.min(120, (W - 360) / Math.max(1, binCount - 1)),
+    y: Math.floor(H / 2) + (i % 2 ? 48 : -48)
+  }));
+  
+  const router = { x: Math.floor(W / 2) + 180, y: Math.floor(H / 2) };
+  const outlet = { x: W - 120, y: Math.floor(H / 2) };
+  const inlets = (n) => Array.from({ length: n }).map((_, i) => ({
+    x: PAD + 60,
+    y: PAD + 60 + i * 28
+  }));
+  
+  return { W, H, PAD, bins, router, outlet, inlets };
+}
+
+function drawCircle(ctx, x, y, r, fill, alpha = 1) {
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.fillStyle = fill;
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawText(ctx, text, x, y, font, color) {
+  ctx.save();
+  ctx.font = font + ' ui-sans-serif';
+  ctx.fillStyle = color;
+  ctx.fillText(text, x, y);
+  ctx.restore();
+}
+
+function drawRoundRect(ctx, x, y, w, h, r, fill, stroke) {
+  ctx.save();
+  ctx.fillStyle = fill;
+  ctx.strokeStyle = stroke;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawBadge(ctx, x, y, label) {
+  ctx.save();
+  ctx.font = '11px ui-sans-serif';
+  const m = ctx.measureText(label);
+  const w = m.width + 16;
+  drawRoundRect(ctx, x, y, w, 20, 10, '#FFF4C2', '#E0E0E0');
+  ctx.fillStyle = '#333';
+  ctx.fillText(label, x + 8, y + 14);
+  ctx.restore();
+}
+
+function makeDemoSeries(n) {
+  return Array.from({ length: n }).map((_, i) => ({
+    id: `demo_${i}`,
+    impact: +(0.08 + Math.random() * 0.6).toFixed(3),
+    blocked: Math.random() < 0.15,
+    cat: i % 7,
+    layer: (i % 7) + 1,
+    codon: generateCodon(i)
+  }));
+}
+
+function generateCodon(i) {
+  const bases = ['A', 'C', 'G', 'T'];
+  return bases[i % 4] + bases[(i >> 2) % 4] + bases[(i >> 4) % 4];
 }

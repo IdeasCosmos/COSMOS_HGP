@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COSMOS 연결 테스트</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-box {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .success { color: #22c55e; }
+        .error { color: #ef4444; }
+        .pending { color: #f59e0b; }
+    </style>
+</head>
+<body>
+    <h1>🌌 COSMOS 연결 테스트</h1>
+
+    <div class="test-box">
+        <h2>1. 프론트엔드 서버</h2>
+        <p id="frontend-status" class="pending">테스트 중...</p>
+    </div>
+
+    <div class="test-box">
+        <h2>2. 백엔드 API</h2>
+        <p id="backend-status" class="pending">테스트 중...</p>
+    </div>
+
+    <div class="test-box">
+        <h2>3. React 로드</h2>
+        <p id="react-status" class="pending">테스트 중...</p>
+    </div>
+
+    <script>
+        // 프론트엔드 테스트
+        document.getElementById('frontend-status').innerHTML =
+            '<span class="success">✓ 정상 (이 페이지가 보이면 프론트엔드 서버 OK)</span>';
+
+        // 백엔드 테스트
+        fetch('http://localhost:5001/health')
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('backend-status').innerHTML =
+                    `<span class="success">✓ 정상 (${data.service})</span>`;
+            })
+            .catch(err => {
+                document.getElementById('backend-status').innerHTML =
+                    `<span class="error">✗ 실패: ${err.message}</span>`;
+            });
+
+        // React 테스트
+        try {
+            if (typeof React !== 'undefined') {
+                document.getElementById('react-status').innerHTML =
+                    '<span class="success">✓ React 로드됨</span>';
+            } else {
+                document.getElementById('react-status').innerHTML =
+                    '<span class="error">✗ React 미설치</span>';
+            }
+        } catch(e) {
+            document.getElementById('react-status').innerHTML =
+                '<span class="error">✗ 오류: ' + e.message + '</span>';
+        }
+    </script>
+</body>
+</html>
